@@ -13,10 +13,7 @@ import { UserService } from '../services/user.service';
   styleUrls: ['../bootstrap/css/login.css']
 })
 
-export class LoginComponent implements OnInit {
-  email = 'tuan';
-  password = 'hihi';
-
+export class LoginComponent {
   user: User = {
     email : 'hihi',
     password : 'haha'
@@ -26,19 +23,17 @@ export class LoginComponent implements OnInit {
 
   data = {};
 
-  ngOnInit() {
-    this.user.email = 'tuan@gmail.com';
-    this.user.password = '1234';
-    this.login();
-  }
+//  ngOnInit() {
+//    this.user.email = 'tuan@gmail.com';
+//    this.user.password = '1234';
+//    this.login();
+//  }
 
 
   login() {
     this.userService.getUser().subscribe(data => {
-      this.data = data;
-      console.log('data : ' + data);
-      this.user.email = 'tuan@gmail.com';
-      this.user.password = '1234';
+      console.log(data);
+      this.user = data;
     });
   }
 
