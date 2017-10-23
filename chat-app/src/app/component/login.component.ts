@@ -2,10 +2,11 @@
  * New typescript file
  */
 import { Component, OnInit } from '@angular/core';
+
 import { User } from '../entity/user';
+import { ResponseData } from '../entity/response.data';
 
 import { UserService } from '../services/user.service';
-
 
 @Component({
   selector: 'app-login',
@@ -14,26 +15,22 @@ import { UserService } from '../services/user.service';
 })
 
 export class LoginComponent {
-  user: User = {
-    email : 'hihi',
-    password : 'haha'
-  };
+  user = new User();
 
   constructor(private userService: UserService) { }
 
-  data = {};
-
-//  ngOnInit() {
-//    this.user.email = 'tuan@gmail.com';
-//    this.user.password = '1234';
-//    this.login();
-//  }
-
-
   login() {
-    this.userService.getUser().subscribe(data => {
+    this.userService.login(this.user).subscribe( (data: ResponseData) => {
+      console.log(data.data);
+      this.user = data.data;
+      console.log(this.user);
+    });
+  }
+
+  register() {
+    this.userService.register(this.user).subscribe( (data: ResponseData) => {
+      console.log('response register');
       console.log(data);
-      this.user = data;
     });
   }
 

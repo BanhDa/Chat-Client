@@ -9,12 +9,34 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
 import { User } from '../entity/user';
+import { ResponseData } from '../entity/response.data';
 import { Constant } from '../common/constant';
 
 @Injectable()
 export class UserService {
 
   constructor(private http: Http) {}
+
+   headers = new Headers({'Content-Type': 'application/json'});
+   options = new RequestOptions({ headers: this.headers, method: 'post'});
+
+  login(data: User): Observable<ResponseData> {
+    const path = 'login';
+    const url = Constant.BASE_URL + path;
+
+    return this.http.post(url, JSON.stringify(data), this.options).map( (response: Response) => {
+      return this.extractData(response);
+    }).catch(this.handleError);
+  }
+
+  register(data: User): Observable<ResponseData> {
+    const path = 'user/register';
+    const url = Constant.BASE_URL + path;
+
+    return this.http.post(url, JSON.stringify(data), this.options).map( (response: Response) => {
+      return this.extractData(response);
+    }).catch(this.handleError);
+  }
 
   getUser(): any {
     const path = 'getuser';

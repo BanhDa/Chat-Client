@@ -6,42 +6,45 @@
 			<div class="sign-in-htm">
 				<div class="group">
 					<label for="user" class="label">Email</label>
-					<input id="user" type="text" class="input" [(ngModel)]="user.email" >
+					<input id="user" type="text" class="input" placeholder="Email" [(ngModel)]="user.email" >
 				</div>
 				<div class="group">
 					<label for="pass" class="label">Password</label>
-					<input id="pass" type="password" class="input" data-type="password" [(ngModel)]="user.password" >
+					<input id="pass" type="password" class="input" data-type="password" placeholder="Password" [(ngModel)]="user.password" >
 				</div>
-				<!-- 
-				<div class="group">
-					<input id="check" type="checkbox" class="check" checked>
-					<label for="check"><span class="icon"></span> Keep me Signed in</label>
-				</div>
-				 -->
 				<div class="group">
 					<input type="submit" class="button" value="Sign In" (click)='login()'>
 				</div>
 				<div class="hr"></div>
 			</div>
+			
+			
 			<div class="sign-up-htm">
 				<div class="group">
-					<label for="user" class="label">Username</label>
-					<input id="user" type="text" class="input">
+					<label for="user" class="label">Email</label>
+					<input id="user" type="text" class="input" placeholder="Email" [(ngModel)]="user.email">
 				</div>
 				<div class="group">
 					<label for="pass" class="label">Password</label>
-					<input id="pass" type="password" class="input" data-type="password">
+					<input id="pass" type="password" class="input" data-type="password" placeholder="Password" [(ngModel)]="user.password">
 				</div>
 				<div class="group">
-					<label for="pass" class="label">Repeat Password</label>
-					<input id="pass" type="password" class="input" data-type="password">
+					<label for="pass" class="label">User name</label>
+					<input id="pass" type="text" class="input" placeholder="User name" [(ngModel)]="user.userName">
 				</div>
 				<div class="group">
-					<label for="pass" class="label">Email Address</label>
-					<input id="pass" type="text" class="input">
+					<label for="user" class="label">Birthday</label>
+					<input id="user" type="text" class="input" placeholder="1995" [(ngModel)]="user.birthday">
 				</div>
 				<div class="group">
-					<input type="submit" class="button" value="Sign Up">
+					<label for="user" class="label">Gender</label>
+					<select id="user" class="input" [(ngModel)]="user.gender">
+						<option value="1">Male</option>
+						<option value="0">Female</option>
+					</select>
+				</div>
+				<div class="group">
+					<input type="submit" class="button" value="Sign Up" (click)='register()'>
 				</div>
 				<div class="hr"></div>
 			</div>
