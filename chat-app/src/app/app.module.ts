@@ -12,6 +12,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './component/login.component';
 
 import { UserService } from './services/user.service';
+import { ChatComponent } from './component/chat/chat.component';
 
 const appRoutes: Routes = [
   {
@@ -24,7 +25,8 @@ const appRoutes: Routes = [
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule,
