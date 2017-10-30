@@ -2,6 +2,7 @@
  * New typescript file
  */
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { User } from '../entity/user';
 import { ResponseData } from '../entity/response.data';
@@ -14,21 +15,42 @@ import { UserService } from '../services/user.service';
   styleUrls: ['../bootstrap/css/login.css']
 })
 
-export class LoginComponent {
-  user = new User();
+export class LoginComponent implements OnInit {
+  loginUser = new User();
+  registerUser = new User();
 
   constructor(private userService: UserService) { }
 
+  loginForm: FormGroup;
+  registerForm: FormGroup;
+
+  ngOnInit() {
+    this.registerForm = new FormGroup({
+      'registerName' : new FormControl(this.registerUser.userName, [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(30)
+      ]),
+      'registerEmail' : new FormControl(this.registerUser.email, [
+        Validators.required
+      ]),
+      'registerPassword' : new FormControl(this.registerUser.password, [
+        Validators.required,
+        Validators.minLength(6)
+      ])
+    });
+  }
+
   login() {
-    this.userService.login(this.user).subscribe( (data: ResponseData) => {
+    this.userService.login(this.loginUser).subscribe( (data: ResponseData) => {
       console.log(data.data);
-      this.user = data.data;
-      console.log(this.user);
+      this.loginUser = data.data;
+      console.log(this.loginUser);
     });
   }
 
   register() {
-    this.userService.register(this.user).subscribe( (data: ResponseData) => {
+    this.userService.register(this.registerUser).subscribe( (data: ResponseData) => {
       console.log('response register');
       console.log(data);
     });
