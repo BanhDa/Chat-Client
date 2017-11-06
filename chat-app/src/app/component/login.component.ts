@@ -3,11 +3,15 @@
  */
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {Router, Routes} from '@angular/router';
+
+import { ReponseCode } from '../common/response.code';
 
 import { User } from '../entity/user';
 import { ResponseData } from '../entity/response.data';
 
 import { UserService } from '../services/user.service';
+import { ResponseContentType } from '@angular/http';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +23,7 @@ export class LoginComponent implements OnInit {
   loginUser = new User();
   registerUser = new User();
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private router: Router) { }
 
   loginForm: FormGroup;
   registerForm: FormGroup;
@@ -45,7 +49,10 @@ export class LoginComponent implements OnInit {
     this.userService.login(this.loginUser).subscribe( (data: ResponseData) => {
       console.log(data.data);
       this.loginUser = data.data;
-      console.log(this.loginUser);
+      if (data.code === ReponseCode.SUCCESSFUL ) {
+        console.log(data.code);
+        this.router.navigate(['/conversation']);
+      }
     });
   }
 

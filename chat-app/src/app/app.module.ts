@@ -14,19 +14,17 @@ import { LoginComponent } from './component/login.component';
 import { UserService } from './services/user.service';
 import { ChatComponent } from './component/chat/chat.component';
 
-const appRoutes: Routes = [
-  {
-    path: '/login',
-    component: LoginComponent,
-    data: { title: 'Chat Client' }
-  }
-];
+import { AppRoutingModule } from './app.routing';
+import { ConversationComponent } from './component/conversation/conversation.component';
+import { UserdetailComponent } from './component/userdetail/userdetail.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    ChatComponent
+    ChatComponent,
+    ConversationComponent,
+    UserdetailComponent
   ],
   imports: [
     BrowserModule,
@@ -36,9 +34,7 @@ const appRoutes: Routes = [
     ModalModule.forRoot(),
     TooltipModule.forRoot(),
     BsDropdownModule.forRoot(),
-//    RouterModule.forRoot(
-//      appRoutes
-//    )
+    AppRoutingModule,
   ],
   providers: [UserService],
   bootstrap: [AppComponent],

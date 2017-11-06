@@ -21,7 +21,7 @@ export class UserService {
    options = new RequestOptions({ headers: this.headers, method: 'post'});
 
   login(data: User): Observable<ResponseData> {
-    const path = 'login';
+    const path = 'user/login';
     const url = Constant.BASE_URL + path;
 
     return this.http.post(url, JSON.stringify(data), this.options).map( (response: Response) => {
@@ -53,7 +53,6 @@ export class UserService {
   }
 
   private handleError(error: Response | any) {
-    // In a real world app, you might use a remote logging infrastructure
     let errMsg: string;
     if (error instanceof Response) {
       const body = error.json() || '';
