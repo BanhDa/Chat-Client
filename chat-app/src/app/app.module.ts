@@ -9,7 +9,7 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 import { AppComponent } from './app.component';
-import { LoginComponent } from './component/login.component';
+import { LoginComponent } from './component/login/login.component';
 
 import { UserService } from './services/user.service';
 import { ChatComponent } from './component/chat/chat.component';

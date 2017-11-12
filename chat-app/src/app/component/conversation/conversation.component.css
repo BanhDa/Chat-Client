@@ -306,6 +306,7 @@ body {
   padding: 0 !important;
   margin: 0 !important;
   height: 100%;
+  width: 100%;
   /*width: 100%;*/
   border-left: 1px solid rgba(0, 0, 0, .08);
   /*overflow-y: auto;*/
@@ -466,7 +467,7 @@ body {
   box-shadow: none;
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 100%) {
   .app {
     top: 0;
     height: 100%;

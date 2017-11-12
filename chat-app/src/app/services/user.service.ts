@@ -15,15 +15,21 @@ import { Constant } from '../common/constant';
 @Injectable()
 export class UserService {
 
-  constructor(private http: Http) {}
+  headers: Headers;
+  options: RequestOptions;
 
-   headers = new Headers({'Content-Type': 'application/json'});
-   options = new RequestOptions({ headers: this.headers, method: 'post'});
+  constructor(private http: Http) {
+    this.headers = new Headers();
+    this.headers.append('Content-Type', 'application/json');
+    this.headers.append('Authorization', localStorage.getItem('token'));
+    this.options = new RequestOptions({ headers: this.headers, method: 'post'});
+  }
 
   login(data: User): Observable<ResponseData> {
     const path = 'user/login';
     const url = Constant.BASE_URL + path;
-
+    console.log(this.headers);
+//    console.log(this.options);
     return this.http.post(url, JSON.stringify(data), this.options).map( (response: Response) => {
       return this.extractData(response);
     }).catch(this.handleError);
@@ -38,17 +44,23 @@ export class UserService {
     }).catch(this.handleError);
   }
 
-  getUser(): any {
-    const path = 'getuser';
-    const url = Constant.BASE_URL + path;
-
+  getUser(userId: string): any {
+    const path = 'profile';
+    const url = Constant.BASE_URL + path + '?userId=' + userId;
+    console.log('get user');
+    console.log(url);
     return this.http.get(url).map ( (response: Response) => {
       return this.extractData(response);
     }).catch(this.handleError);
   }
 
+
+
+
   private extractData(res: Response) {
     const body = res.json();
+    console.log('response');
+    console.log(body);
     return body || {};
   }
 

@@ -1,3 +1,4 @@
+<!-- 
 <div class="col-sm-8 conversation">
       <div class="row heading">
         <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
@@ -11,11 +12,11 @@
           <span class="heading-online">Online</span>
         </div>
         
-        <!-- 
+        
         <div class="col-sm-1 col-xs-1  heading-dot pull-right">
           <i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
         </div>
-         -->
+        
          
       </div>
 
@@ -23,3 +24,48 @@
 
       
     </div>
+    
+    -->
+    
+    <div class="row-fluid user-infos cyruxx">
+            <div class="span10 offset1">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">User information</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row-fluid">
+                            <div class="span3">
+                                <img class="img-circle"
+                                     src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=100"
+                                     alt="User Pic">
+                            </div>
+                            <div class="span6">
+                                <strong>{{userDetail.userName}}</strong><br>
+                                <table class="table table-condensed table-responsive table-user-information">
+                                    <tbody>
+                                    <tr>
+                                        <td>User Name:</td>
+                                        <td>{{userDetail.userName}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Email:</td>
+                                        <td>{{userDetail.email}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Birthday:</td>
+                                        <td>{{userDetail.birthday}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Gender:</td>
+                                        <td>{{userDetail.gender}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
