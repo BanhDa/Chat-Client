@@ -12,11 +12,12 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './component/login/login.component';
 
 import { UserService } from './services/user.service';
-import { ChatComponent } from './component/chat/chat.component';
+import { ApiService } from './services/api.service';
 
 import { AppRoutingModule } from './app.routing';
 import { ConversationComponent } from './component/conversation/conversation.component';
 import { UserdetailComponent } from './component/userdetail/userdetail.component';
+import { ChatComponent } from './component/chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,7 @@ import { UserdetailComponent } from './component/userdetail/userdetail.component
     BsDropdownModule.forRoot(),
     AppRoutingModule,
   ],
-  providers: [UserService],
+  providers: [UserService, ApiService],
   bootstrap: [AppComponent],
   exports: [ModalModule, TooltipModule, BsDropdownModule],
 })

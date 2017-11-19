@@ -1,6 +1,7 @@
 /**
  * New typescript file
  */
+import { ResponseData } from '../entity/response.data';
 import { Injectable } from '@angular/core';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import {Observable} from 'rxjs/Observable';
@@ -8,6 +9,52 @@ import {Observable} from 'rxjs/Observable';
 @Injectable()
 export class ApiService {
 
-  constructor(private http: Http) {}
+  headers: Headers;
+  options: RequestOptions;
 
+  constructor(private http: Http) {
+    this.headers = new Headers();
+    this.headers.append('Content-Type', 'application/json');
+    console.log('constructor api service token');
+    console.log(localStorage.getItem('token'));
+    this.headers.append('Authorization', localStorage.getItem('token'));
+    this.options = new RequestOptions({ headers: this.headers, method: 'post'});
+  }
+
+  post(url: string, data: string): Observable<ResponseData> {
+    console.log('call api');
+    this.addHeaders();
+    return this.http.post(url, data, this.options).map( (response: Response) => {
+      return this.extractData(response);
+    }).catch(this.handleError);
+  }
+
+  addHeaders() {
+    console.log('add headers');
+    this.headers = new Headers();
+    this.headers.append('Content-Type', 'application/json');
+    this.headers.append('Authorization', localStorage.getItem('token'));
+    this.options = new RequestOptions({ headers: this.headers, method: 'post'});
+  }
+
+  private extractData(res: Response) {
+    const body = res.json();
+    console.log('response');
+    console.log(res);
+    console.log(body);
+    return body || {};
+  }
+
+  private handleError(error: Response | any) {
+    let errMsg: string;
+    if (error instanceof Response) {
+      const body = error.json() || '';
+      const err = body.error || JSON.stringify(body);
+      errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
+    } else {
+      errMsg = error.message ? error.message : error.toString();
+    }
+    console.error(errMsg);
+    return Observable.throw(errMsg);
+  }
 }

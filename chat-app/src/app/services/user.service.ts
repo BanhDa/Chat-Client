@@ -11,70 +11,53 @@ import 'rxjs/add/operator/catch';
 import { User } from '../entity/user';
 import { ResponseData } from '../entity/response.data';
 import { Constant } from '../common/constant';
+import { GetUserInfoRequest } from '../entity/request/getuserinforequest';
+import { SearchRequest } from '../entity/request/searchrequest';
+import { ApiService } from './api.service';
 
 @Injectable()
 export class UserService {
 
-  headers: Headers;
-  options: RequestOptions;
-
-  constructor(private http: Http) {
-    this.headers = new Headers();
-    this.headers.append('Content-Type', 'application/json');
-    this.headers.append('Authorization', localStorage.getItem('token'));
-    this.options = new RequestOptions({ headers: this.headers, method: 'post'});
+  constructor(private apiService: ApiService) {
   }
 
   login(data: User): Observable<ResponseData> {
-    const path = 'user/login';
+    const path = '/user/login';
     const url = Constant.BASE_URL + path;
-    console.log(this.headers);
-//    console.log(this.options);
-    return this.http.post(url, JSON.stringify(data), this.options).map( (response: Response) => {
-      return this.extractData(response);
-    }).catch(this.handleError);
+    return this.apiService.post(url, JSON.stringify(data));
   }
 
   register(data: User): Observable<ResponseData> {
-    const path = 'user/register';
+    const path = '/user/register';
     const url = Constant.BASE_URL + path;
 
-    return this.http.post(url, JSON.stringify(data), this.options).map( (response: Response) => {
-      return this.extractData(response);
-    }).catch(this.handleError);
-  }
-
-  getUser(userId: string): any {
-    const path = 'profile';
-    const url = Constant.BASE_URL + path + '?userId=' + userId;
-    console.log('get user');
-    console.log(url);
-    return this.http.get(url).map ( (response: Response) => {
-      return this.extractData(response);
-    }).catch(this.handleError);
+    return this.apiService.post(url, JSON.stringify(data));
   }
 
 
+  getUser(userId: string): Observable<ResponseData> {
+    const path = '/user/profile';
+    const url = Constant.BASE_URL + path + '?userid=' + userId;
 
-
-  private extractData(res: Response) {
-    const body = res.json();
-    console.log('response');
-    console.log(body);
-    return body || {};
+    return this.apiService.post(url, JSON.stringify(''));
   }
 
-  private handleError(error: Response | any) {
-    let errMsg: string;
-    if (error instanceof Response) {
-      const body = error.json() || '';
-      const err = body.error || JSON.stringify(body);
-      errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
-    } else {
-      errMsg = error.message ? error.message : error.toString();
-    }
-    console.error(errMsg);
-    return Observable.throw(errMsg);
+  searchUser(searchUserName: string, skip: number, take: number): Observable<ResponseData> {
+    const path = '/user/searchuser';
+    const url = Constant.BASE_URL + path;
+
+    const data = new SearchRequest();
+    data.searchUserName = searchUserName;
+    data.skip = skip;
+    data.take = take;
+
+    return this.apiService.post(url, JSON.stringify(data));
   }
 
+  logout(): Observable<ResponseData> {
+    const path = '/user/logout';
+    const url = Constant.BASE_URL + path;
+
+    return this.apiService.post(url, JSON.stringify(''));
+  }
 }

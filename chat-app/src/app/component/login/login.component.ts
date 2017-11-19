@@ -48,6 +48,13 @@ export class LoginComponent implements OnInit {
     this.userService.register(this.registerUser).subscribe( (data: ResponseData) => {
       console.log('response register');
       console.log(data);
+      this.registerUser = data.data;
+      if (data.code === ReponseCode.SUCCESSFUL ) {
+        localStorage.setItem('user', JSON.stringify(data.data) );
+        localStorage.setItem('userId', this.registerUser.userId);
+        localStorage.setItem('token', data.token);
+        this.router.navigate(['/chat']);
+      }
     });
   }
 

@@ -26,8 +26,21 @@
     </div>
     
     -->
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <div class="row-fluid user-infos cyruxx">
+          
+          <div class=" btn-group col-sm-1 col-xs-1  heading-dot  pull-right" dropdown>
+            <i class="fa fa-ellipsis-v fa-2x" dropdownToggle></i>  
+            <ul *dropdownMenu class="dropdown-menu" role="menu">
+			    <li role="menuitem"><a class="dropdown-item" href="#">Action</a></li>
+			    <li role="menuitem"><a class="dropdown-item" href="#">Another action</a></li>
+			    <li role="menuitem"><a class="dropdown-item" href="#">Something else here</a></li>
+			    <li class="divider dropdown-divider"></li>
+			    <li role="menuitem"><a class="dropdown-item" (click)="logout()">Logout</a>
+			    </li>
+			  </ul>
+          </div>
+          
             <div class="span10 offset1">
                 <div class="panel panel-primary">
                     <div class="panel-heading">

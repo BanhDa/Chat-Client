@@ -6,37 +6,43 @@
       <div class="side-one">
         <div class="row heading">
           <div class="col-sm-3 col-xs-3 heading-avatar">
-            <div class="heading-avatar-icon"  (click)="userDetail()">
+            <div class="heading-avatar-icon"  (click)="userDetail(userId)">
               <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
             </div>
           </div>
           <div class="col-sm-1 col-xs-1  heading-dot  pull-right">
             <i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
           </div>
-          <div class="col-sm-2 col-xs-2 heading-compose  pull-right dropdown" >
-           	<i class="fa fa-comments fa-2x  pull-right" aria-hidden="true">
-           		<a href="#" data-toggle="dropdown" class="dropdown-toggle">
-           		</a>	
+          <div class="col-sm-2 col-xs-2 heading-compose  pull-right" dropdown>
+           	<i class="fa fa-comments fa-2x  pull-right" (click)="getChatConversation()">
            	</i>
-	        <ul class="dropdown-menu">
-	            <li><a href="#">Action</a></li>
-	            <li><a href="#">Another action</a></li>
-	        </ul>
           </div>
         </div>
 
         <div class="row searchBox">
           <div class="col-sm-12 searchBox-inner">
+          <!-- 
             <div class="form-group has-feedback">
               <input id="searchText" type="text" class="form-control" name="searchText" placeholder="Search">
-              <span class="glyphicon glyphicon-search form-control-feedback"></span>
+              <button><span class="glyphicon glyphicon-search form-control-feedback"></span></button>
+            </div>
+             -->
+            <div id="imaginary_container"> 
+                <div class="input-group stylish-input-group">
+                    <input type="text" class="form-control"  placeholder="Search" [(ngModel)]="searchName" >
+                    <span class="input-group-addon">
+                        <button type="submit" (click)="searchUser()">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>  
+                    </span>
+                </div>
             </div>
           </div>
         </div>
 
-        <div class="row sideBar">
+        <div class="row sideBar" *ngIf="isListConversation">
         
-          <div class="row sideBar-body" (click)="conversation()">
+          <div class="row sideBar-body" (click)="chatHistory()">
             <div class="col-sm-3 col-xs-3 sideBar-avatar">
               <div class="avatar-icon">
                 <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
@@ -50,6 +56,30 @@
                 </div>
                 <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
                   <span class="time-meta pull-right">18:18
+                </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+        <div class="row sideBar" *ngIf="isSearchUser">
+        
+          <div class="row sideBar-body" (click)="userDetail(searchUser.userId)" *ngFor="let searchUser of listSearchUser let i = index">
+            <div class="col-sm-3 col-xs-3 sideBar-avatar">
+              <div class="avatar-icon">
+                <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
+              </div>
+            </div>
+            <div class="col-sm-9 col-xs-9 sideBar-main">
+              <div class="row">
+                <div class="col-sm-8 col-xs-8 sideBar-name">
+                  <span class="name-meta">{{searchUser.userName}}
+                </span>
+                </div>
+                <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
+                  <span class="time-meta pull-right">{{searchUser.birthday}}
                 </span>
                 </div>
               </div>
@@ -72,47 +102,16 @@
           </div>
         </div>
 
-        <div class="row composeBox">
-          <div class="col-sm-12 composeBox-inner">
-            <div class="form-group has-feedback">
-              <input id="composeText" type="text" class="form-control" name="searchText" placeholder="Search People">
-              <span class="glyphicon glyphicon-search form-control-feedback"></span>
-            </div>
-          </div>
-        </div>
-
-        <div class="row compose-sideBar">
-        <a routerLink="/conversation" routerLinkActive="active">link</a>
-          <div class="row sideBar-body">
-            <div class="col-sm-3 col-xs-3 sideBar-avatar">
-              <div class="avatar-icon">
-                <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
-              </div>
-            </div>
-            <div class="col-sm-9 col-xs-9 sideBar-main">
-              <div class="row">
-                <div class="col-sm-8 col-xs-8 sideBar-name">
-                  <span class="name-meta">John Doe
-                </span>
-                </div>
-                <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
-                  <span class="time-meta pull-right">18:18
-                </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
-	<div *ngIf="isConversation">
+	<div *ngIf="ischatHistory">
 		<app-conversation [friendId]="friendId"></app-conversation>
 	</div>
 	 
 	 
 	<div *ngIf="isUserDetail">
-		<app-userdetail [friendId]="userId"></app-userdetail>
+		<app-userdetail [friendId]="friendId"></app-userdetail>
 	</div>
 	
   </div>
