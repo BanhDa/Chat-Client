@@ -13,6 +13,8 @@ import { LoginComponent } from './component/login/login.component';
 
 import { UserService } from './services/user.service';
 import { ApiService } from './services/api.service';
+import { ChatService } from './services/chat.service';
+import { WebsocketService } from './services/websocket.service';
 
 import { AppRoutingModule } from './app.routing';
 import { ConversationComponent } from './component/conversation/conversation.component';
@@ -37,7 +39,7 @@ import { ChatComponent } from './component/chat/chat.component';
     BsDropdownModule.forRoot(),
     AppRoutingModule,
   ],
-  providers: [UserService, ApiService],
+  providers: [UserService, ApiService, ChatService, WebsocketService],
   bootstrap: [AppComponent],
   exports: [ModalModule, TooltipModule, BsDropdownModule],
 })

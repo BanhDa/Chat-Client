@@ -1,3 +1,4 @@
+import { ChatService } from '../../services/chat.service';
 import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
@@ -10,9 +11,17 @@ export class ConversationComponent implements OnInit {
   @Input()
   public friendId: string;
 
-  constructor() { }
+  public message: string;
+
+  constructor(private chatService: ChatService) { }
 
   ngOnInit() {
+  }
+
+  sendMessage() {
+    console.log('send msg');
+    this.chatService.sendMessage(this.message);
+    this.message = '';
   }
 
 }

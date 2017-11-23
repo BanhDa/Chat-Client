@@ -17,7 +17,7 @@ export class ChatComponent implements OnInit {
 
   public isUserDetail = true;
   public ischatHistory = false;
-  public isListConversation = false;
+  public isListConversation = true;
   public isSearchUser = false;
 
   public searchName: string;
