@@ -1,3 +1,5 @@
+import { Message } from '../entity/message/message';
+import { Socket } from '../entity/message/socket';
 import { Injectable } from '@angular/core';
 import * as io from 'socket.io-client';
 import { Observable } from 'rxjs/Observable';
@@ -6,7 +8,8 @@ import * as Rx from 'rxjs/Rx';
 @Injectable()
 export class WebsocketService {
 
-  private socket;
+  public socket;
+  public events = new Array<string>();
 
   constructor() { }
 
@@ -17,7 +20,6 @@ export class WebsocketService {
 
     // We define our observable which will observe any incoming messages
     // from our socket.io server.
-    console.log('connect');
     const observable = new Observable(observers => {
         this.socket.on('chat', (data) => {
           console.log('Received message from Server');
@@ -26,6 +28,7 @@ export class WebsocketService {
         });
         return () => {
           console.log('disconnect');
+          this.socket.emit('disconn', '');
           this.socket.disconnect();
         };
     });
@@ -35,8 +38,7 @@ export class WebsocketService {
     // socket server whenever the `next()` method is called.
     const observer = {
         next: (data: Object) => {
-          console.log('emit');
-            this.socket.emit('chat', JSON.stringify(data));
+            this.socket.emit(Socket.EVENT_CHAT, data);
         },
     };
 
@@ -45,4 +47,31 @@ export class WebsocketService {
     return Rx.Subject.create(observer, observable);
   }
 
+//  on(event: string, callBack: any): Observable<Message> {
+//    if (this.existsEvent(event)) {
+//      return;
+//    }
+//    this.events.push(event);
+//    if (this.socket) {
+//      this.socket.on(event, (data) => {
+//        console.log('reveiver data from server');
+//        console.log(data);
+//      });
+//    }
+//  }
+
+  existsEvent(event: string): boolean {
+    let i: number;
+    for (i = 0; i < this.events.length; i++) {
+      if (this.events[i] === event) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  ping(token: string) {
+    this.socket.emit(Socket.EVENT_CONNECTION, token);
+  }
 }

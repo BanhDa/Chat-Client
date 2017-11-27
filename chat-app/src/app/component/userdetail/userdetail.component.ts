@@ -14,25 +14,25 @@ import { ReponseCode } from '../../common/response.code';
 
 export class UserdetailComponent implements OnInit, OnChanges {
 
-  @Input()
-  friendId: string;
+  @Input() friendId: string;
+
   userDetail = new User();
 
   constructor(private userService: UserService, private router: Router ) { }
 
   ngOnInit() {
     console.log('hihi');
-    console.log(this.friendId);
-    this.friendId = localStorage.getItem('userId');
-    console.log(this.friendId);
-    this.userService.getUser(this.friendId).subscribe ( (data: ResponseData) => {
-      if (data.code === ReponseCode.SUCCESSFUL) {
-        this.userDetail = data.data;
-      } else if (data.code === ReponseCode.INVALID_TOKEN) {
-        localStorage.clear();
-        this.router.navigate(['/login']);
-      }
-    });
+//    console.log(this.friendId);
+//    this.friendId = localStorage.getItem('userId');
+//    console.log(this.friendId);
+//    this.userService.getUser(this.friendId).subscribe ( (data: ResponseData) => {
+//      if (data.code === ReponseCode.SUCCESSFUL) {
+//        this.userDetail = data.data;
+//      } else if (data.code === ReponseCode.INVALID_TOKEN) {
+//        localStorage.clear();
+//        this.router.navigate(['/login']);
+//      }
+//    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -40,7 +40,12 @@ export class UserdetailComponent implements OnInit, OnChanges {
     if (changes['friendId']) {
       console.log(this.friendId);
       this.userService.getUser(this.friendId).subscribe ( (data: ResponseData) => {
+        if (data.code === ReponseCode.SUCCESSFUL) {
         this.userDetail = data.data;
+      } else if (data.code === ReponseCode.INVALID_TOKEN) {
+        localStorage.clear();
+        this.router.navigate(['/login']);
+      }
       });
     }
   }

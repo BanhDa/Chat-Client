@@ -1,7 +1,11 @@
+import { Constant } from '../../common/constant';
 import { ReponseCode } from '../../common/response.code';
+import { LastChat } from '../../entity/message/lastchat';
 import { ResponseData } from '../../entity/response.data';
 import { User } from '../../entity/user';
+import { ChatService } from '../../services/chat.service';
 import { UserService } from '../../services/user.service';
+import { WebsocketService } from '../../services/websocket.service';
 import { Component, OnInit } from '@angular/core';
 import {Router, Routes} from '@angular/router';
 
@@ -13,27 +17,35 @@ import {Router, Routes} from '@angular/router';
 export class ChatComponent implements OnInit {
 
   public friendId: string;
-  public userId = localStorage.getItem('userId');
+  public userId = localStorage.getItem(Constant.USER_ID);
 
-  public isUserDetail = true;
+  public isUserDetail = false;
   public ischatHistory = false;
   public isListConversation = true;
   public isSearchUser = false;
 
   public searchName: string;
   public listSearchUser: User[];
+  public listConversasions = new Array<LastChat>();
 
-  constructor(private router: Router, private userService: UserService) { }
+  constructor(private router: Router,
+          private userService: UserService,
+          private socketService: WebsocketService,
+        private chatService: ChatService) { }
 
   ngOnInit() {
-    if (!localStorage.getItem('token')) {
+
+    if (!localStorage.getItem(Constant.TOKEN)) {
       this.router.navigate(['/login']);
     }
+    this.getChatConversation();
+
   }
 
-  chatHistory() {
+  chatHistory(friendId: string) {
     this.isUserDetail = false;
     this.ischatHistory = true;
+    this.friendId = friendId;
   }
 
   userDetail(userId: string) {
@@ -47,6 +59,14 @@ export class ChatComponent implements OnInit {
 
   getChatConversation() {
     console.log('chat conversation');
+    this.chatService.getChatConversasion().subscribe((data: ResponseData) => {
+      if (data.code === ReponseCode.SUCCESSFUL) {
+        this.listConversasions = data.data;
+      } else if (data.code === ReponseCode.INVALID_TOKEN) {
+        localStorage.clear();
+        this.router.navigate(['/login']);
+      }
+    });
   }
 
   searchUser() {

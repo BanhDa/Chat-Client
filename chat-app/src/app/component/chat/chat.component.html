@@ -42,7 +42,7 @@
 
         <div class="row sideBar" *ngIf="isListConversation">
         
-          <div class="row sideBar-body" (click)="chatHistory()">
+          <div class="row sideBar-body" (click)="chatHistory()" *ngFor="let conversation of listConversasions">
             <div class="col-sm-3 col-xs-3 sideBar-avatar">
               <div class="avatar-icon">
                 <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
@@ -66,7 +66,7 @@
         
         <div class="row sideBar" *ngIf="isSearchUser">
         
-          <div class="row sideBar-body" (click)="userDetail(searchUser.userId)" *ngFor="let searchUser of listSearchUser let i = index">
+          <div class="row sideBar-body" (click)="chatHistory(searchUser.userId)" *ngFor="let searchUser of listSearchUser let i = index">
             <div class="col-sm-3 col-xs-3 sideBar-avatar">
               <div class="avatar-icon">
                 <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
