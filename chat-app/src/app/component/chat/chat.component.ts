@@ -1,6 +1,7 @@
 import { Constant } from '../../common/constant';
 import { ReponseCode } from '../../common/response.code';
 import { LastChat } from '../../entity/message/lastchat';
+import { Message } from '../../entity/message/message';
 import { ResponseData } from '../../entity/response.data';
 import { User } from '../../entity/user';
 import { ChatService } from '../../services/chat.service';
@@ -8,6 +9,7 @@ import { UserService } from '../../services/user.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { Component, OnInit } from '@angular/core';
 import {Router, Routes} from '@angular/router';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-chat',
@@ -16,8 +18,9 @@ import {Router, Routes} from '@angular/router';
 })
 export class ChatComponent implements OnInit {
 
-  public friendId: string;
+  public friendId = '';
   public userId = localStorage.getItem(Constant.USER_ID);
+  public token = localStorage.getItem(Constant.TOKEN);
 
   public isUserDetail = false;
   public ischatHistory = false;
@@ -35,16 +38,21 @@ export class ChatComponent implements OnInit {
 
   ngOnInit() {
 
-    if (!localStorage.getItem(Constant.TOKEN)) {
+    if (!this.token) {
       this.router.navigate(['/login']);
     }
+    this.chatService.connectServer(this.token);
     this.getChatConversation();
 
   }
 
   chatHistory(friendId: string) {
+    console.log('chat history user id');
+    console.log(friendId);
     this.isUserDetail = false;
     this.ischatHistory = true;
+
+    this.isListConversation = true;
     this.friendId = friendId;
   }
 
@@ -61,12 +69,25 @@ export class ChatComponent implements OnInit {
     console.log('chat conversation');
     this.chatService.getChatConversasion().subscribe((data: ResponseData) => {
       if (data.code === ReponseCode.SUCCESSFUL) {
+        this.isListConversation = true;
+        this.isSearchUser = false;
         this.listConversasions = data.data;
+        this.updateLastChatDateTime();
       } else if (data.code === ReponseCode.INVALID_TOKEN) {
         localStorage.clear();
         this.router.navigate(['/login']);
       }
     });
+  }
+
+  updateLastChatDateTime() {
+    let i = 0;
+    console.log('update last chat time');
+    for (i = 0; i < this.listConversasions.length; i++) {
+      const time = this.listConversasions[i].time;
+      this.listConversasions[i].timeDate = new Date(time);
+      console.log(this.listConversasions[i].timeDate);
+    }
   }
 
   searchUser() {
@@ -88,5 +109,84 @@ export class ChatComponent implements OnInit {
         this.router.navigate(['/login']);
       }
     });
+  }
+
+  onChange(message: Message) {
+//    push last chat
+    console.log('update last chat');
+    console.log(message);
+
+    let newChat = true;
+    let i = 0;
+    for (i = 0; i < this.listConversasions.length; i++) {
+      const lastMessage = this.listConversasions[i];
+      if (lastMessage.userId === message.toUserId
+        || lastMessage.userId === message.fromUserId) {
+        lastMessage.value = message.value;
+
+        lastMessage.timeDate = new Date();
+        lastMessage.time = Date.now();
+
+        if (lastMessage.unreadNumber === 0) {
+            lastMessage.unreadNumber = 1;
+          } else {
+            lastMessage.unreadNumber++;
+          }
+//      if user which send message is not current user, increase unread number
+        if (message.fromUserId !== this.friendId && message.fromUserId !== this.userId) {
+          if (lastMessage.unreadNumber === null || lastMessage.unreadNumber === 0) {
+            lastMessage.unreadNumber = 1;
+          } else {
+            lastMessage.unreadNumber++;
+          }
+        }
+
+        newChat = false;
+      }
+    }
+
+    if (newChat) {
+      const newLastChat = this.parseMessageIntoLastChat(message);
+
+      this.userService.getUser(this.friendId).subscribe ( (data: ResponseData) => {
+        if (data.code === ReponseCode.SUCCESSFUL) {
+          const user: User = data.data;
+          newLastChat.userId = user.userId;
+          newLastChat.userName = user.userName;
+          newLastChat.avatar = user.avatar;
+          newLastChat.unreadNumber = 1;
+          this.listConversasions.push(newLastChat);
+
+          this.listConversasions.sort( (last1: LastChat, last2: LastChat) => {
+            return last1.time > last2.time ? 1 : last1.time === last2.time ? 0 : -1;
+          } );
+
+        } else if (data.code === ReponseCode.INVALID_TOKEN) {
+          localStorage.clear();
+          this.router.navigate(['/login']);
+        }
+        });
+    } else {
+      this.listConversasions.sort( (last1: LastChat, last2: LastChat) => {
+        return last1.time > last2.time ? 1 : last1.time === last2.time ? 0 : -1;
+      } );
+    }
+  }
+
+  parseMessageIntoLastChat(message: Message): LastChat {
+    const newLastChat = new LastChat();
+
+    newLastChat.id = message.id;
+    newLastChat.fromUserId = message.fromUserId;
+    newLastChat.toUserId = message.toUserId;
+    newLastChat.messageId = message.messageId;
+    newLastChat.messageType = message.messageType;
+    newLastChat.value = message.value;
+//  parse string to number by + operator
+    newLastChat.time = +message.time;
+    newLastChat.timeDate = new Date(message.time);
+    newLastChat.readTime = message.readTime;
+
+    return newLastChat;
   }
 }

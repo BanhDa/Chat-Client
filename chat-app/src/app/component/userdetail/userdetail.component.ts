@@ -39,7 +39,12 @@ export class UserdetailComponent implements OnInit, OnChanges {
     console.log('change');
     if (changes['friendId']) {
       console.log(this.friendId);
-      this.userService.getUser(this.friendId).subscribe ( (data: ResponseData) => {
+      this.getUserInfo(this.friendId);
+    }
+  }
+
+  getUserInfo(userId: string) {
+    this.userService.getUser(userId).subscribe ( (data: ResponseData) => {
         if (data.code === ReponseCode.SUCCESSFUL) {
         this.userDetail = data.data;
       } else if (data.code === ReponseCode.INVALID_TOKEN) {
@@ -47,11 +52,6 @@ export class UserdetailComponent implements OnInit, OnChanges {
         this.router.navigate(['/login']);
       }
       });
-    }
-  }
-
-  getUserInfo() {
-
   }
 
   logout() {

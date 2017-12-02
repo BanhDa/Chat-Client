@@ -21,28 +21,25 @@
 
         <div class="row searchBox">
           <div class="col-sm-12 searchBox-inner">
-          <!-- 
-            <div class="form-group has-feedback">
-              <input id="searchText" type="text" class="form-control" name="searchText" placeholder="Search">
-              <button><span class="glyphicon glyphicon-search form-control-feedback"></span></button>
-            </div>
-             -->
+          
             <div id="imaginary_container"> 
-                <div class="input-group stylish-input-group">
-                    <input type="text" class="form-control"  placeholder="Search" [(ngModel)]="searchName" >
-                    <span class="input-group-addon">
-                        <button type="submit" (click)="searchUser()">
-                            <span class="glyphicon glyphicon-search"></span>
-                        </button>  
-                    </span>
-                </div>
+            	<form (submit)="searchUser(searchName)">
+	                <div class="input-group stylish-input-group">
+	                	<input type="text" class="form-control"  placeholder="Search" [(ngModel)]="searchName" name="searchName">
+	                    <span class="input-group-addon">
+	                        <button type="submit" >
+	                            <i class="glyphicon glyphicon-search"></i>
+	                        </button>  
+	                    </span>
+	                </div>
+                </form>
             </div>
           </div>
         </div>
 
         <div class="row sideBar" *ngIf="isListConversation">
         
-          <div class="row sideBar-body" (click)="chatHistory()" *ngFor="let conversation of listConversasions">
+          <div class="row sideBar-body" (click)="chatHistory(conversation.userId)" *ngFor="let conversation of listConversasions">
             <div class="col-sm-3 col-xs-3 sideBar-avatar">
               <div class="avatar-icon">
                 <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
@@ -50,13 +47,15 @@
             </div>
             <div class="col-sm-9 col-xs-9 sideBar-main">
               <div class="row">
-                <div class="col-sm-8 col-xs-8 sideBar-name">
-                  <span class="name-meta">John Doe
-                </span>
+                <div class="col-sm-7 col-xs-7 sideBar-name">
+                  <span class="name-meta"> {{conversation.userName}} </span><br>
+                  <span class="time-meta"> {{conversation.value}} </span>
                 </div>
-                <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
-                  <span class="time-meta pull-right">18:18
-                </span>
+                <div class="col-sm-3 col-xs-3 pull-right sideBar-time">
+                  <span class="time-meta pull-right"> {{conversation.timeDate | date:'shortTime'}} </span>
+                </div>
+                <div class="col-sm-2 col-xs-2 ">
+                  <span class="badge unread-number">{{conversation.unreadNumber}}</span>
                 </div>
               </div>
             </div>
@@ -106,7 +105,7 @@
     </div>
 
 	<div *ngIf="ischatHistory">
-		<app-conversation [friendId]="friendId"></app-conversation>
+		<app-conversation [friendId]="friendId" (eventChat)="onChange($event)"></app-conversation>
 	</div>
 	 
 	 

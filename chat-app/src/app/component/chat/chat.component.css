@@ -68,7 +68,11 @@ body {
 
 }
 
-
+.unread-number {
+	height: 40%;
+    width: 50%;
+    background-color: red;
+}
 .heading {
   padding: 10px 16px 10px 15px;
   margin: 0;
@@ -216,7 +220,7 @@ body {
 }
 
 .sideBar-time {
-  padding: 10px !important;
+  /*padding: 10px !important;*/
 }
 
 .time-meta {
@@ -529,7 +533,7 @@ body {
     padding: 5% !important;
   }
   .sideBar-time {
-    padding: 10px !important;
+    /*padding: 10px !important; */
   }
   .time-meta {
     text-align: right;

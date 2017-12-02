@@ -8,11 +8,15 @@ export class LastChat {
   public avatar: string;
 
   public id: string;
+  public messageId: string;
   public fromUserId: string;
   public toUserId: string;
-  public time: string;
+  public time: number;
   public readTime: string;
   public messageType: string;
   public value: string;
+
+  public timeDate: Date;
+  public unreadNumber = 90;
 
 }

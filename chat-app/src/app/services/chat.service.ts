@@ -49,7 +49,12 @@ export class ChatService {
     return this.apiService.post(url, '');
   }
 
+  connectServer(token: string) {
+    this.connect(token);
+  }
+
   connect(token: string) {
+    console.log('ping');
     this.wsService.ping(token);
   }
 
