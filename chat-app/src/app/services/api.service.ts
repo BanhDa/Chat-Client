@@ -11,6 +11,7 @@ export class ApiService {
 
   headers: Headers;
   options: RequestOptions;
+  token = localStorage.getItem('token');
 
   constructor(private http: Http) {
     this.headers = new Headers();
@@ -29,11 +30,28 @@ export class ApiService {
     }).catch(this.handleError);
   }
 
+  getImage(url: string): Observable<any> {
+    this.addHeaders();
+    return this.http.get(url, this.options).map( (response: any) => {
+      return response;
+    });
+  }
+
+  postImage(url: string, data: any): Observable<ResponseData> {
+    console.log('call api');
+    this.addHeaders();
+    console.log(JSON.stringify(data));
+    return this.http.post(url, data, this.options).map( (response: Response) => {
+      return this.extractData(response);
+    }).catch(this.handleError);
+  }
+
   addHeaders() {
     console.log('add headers');
+    console.log(this.token);
     this.headers = new Headers();
     this.headers.append('Content-Type', 'application/json');
-    this.headers.append('Authorization', localStorage.getItem('token'));
+    this.headers.append('Authorization', this.token);
     this.options = new RequestOptions({ headers: this.headers, method: 'post'});
   }
 

@@ -49,7 +49,8 @@
               <div class="row">
                 <div class="col-sm-7 col-xs-7 sideBar-name">
                   <span class="name-meta"> {{conversation.userName}} </span><br>
-                  <span class="time-meta"> {{conversation.value}} </span>
+                  <span class="time-meta" *ngIf="conversation.messageType === messageText"> {{conversation.value}} </span>
+                  <span class="time-meta" *ngIf="conversation.messageType === messageImage"> [Image] </span>
                 </div>
                 <div class="col-sm-3 col-xs-3 pull-right sideBar-time">
                   <span class="time-meta pull-right"> {{conversation.timeDate | date:'shortTime'}} </span>

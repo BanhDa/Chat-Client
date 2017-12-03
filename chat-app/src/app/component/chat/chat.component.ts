@@ -2,6 +2,7 @@ import { Constant } from '../../common/constant';
 import { ReponseCode } from '../../common/response.code';
 import { LastChat } from '../../entity/message/lastchat';
 import { Message } from '../../entity/message/message';
+import { MessageType } from '../../entity/message/messagetype';
 import { ResponseData } from '../../entity/response.data';
 import { User } from '../../entity/user';
 import { ChatService } from '../../services/chat.service';
@@ -10,6 +11,7 @@ import { WebsocketService } from '../../services/websocket.service';
 import { Component, OnInit } from '@angular/core';
 import {Router, Routes} from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-chat',
@@ -31,6 +33,9 @@ export class ChatComponent implements OnInit {
   public listSearchUser: User[];
   public listConversasions = new Array<LastChat>();
 
+  public messageText = MessageType.TEXT;
+  public messageImage = MessageType.IMAGE;
+
   constructor(private router: Router,
           private userService: UserService,
           private socketService: WebsocketService,
@@ -41,9 +46,42 @@ export class ChatComponent implements OnInit {
     if (!this.token) {
       this.router.navigate(['/login']);
     }
+    this.listenMessageChat();
     this.chatService.connectServer(this.token);
     this.getChatConversation();
 
+  }
+
+  listenMessageChat() {
+    this.on('chat', (data) => {
+      console.log(data);
+    });
+  }
+
+  on(event: string, callBack: any): Observable<Message> {
+    if (this.existsEvent(event)) {
+      return;
+    }
+    this.socketService.events.push(event);
+    if (this.socketService.socket) {
+      this.socketService.socket.on(event, (message: Message) => {
+        console.log('reveiver data from server');
+        console.log(message);
+
+        this.onChange(message);
+      });
+    }
+  }
+
+  existsEvent(event: string): boolean {
+    let i: number;
+    for (i = 0; i < this.socketService.events.length; i++) {
+      if (this.socketService.events[i] === event) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   chatHistory(friendId: string) {
@@ -122,16 +160,16 @@ export class ChatComponent implements OnInit {
       const lastMessage = this.listConversasions[i];
       if (lastMessage.userId === message.toUserId
         || lastMessage.userId === message.fromUserId) {
-        lastMessage.value = message.value;
+
+        if (message.messageType === MessageType.TEXT) {
+          lastMessage.value = message.value;
+        } else if (message.messageType === MessageType.IMAGE) {
+          lastMessage.value = Constant.MESSAGE_IMAGE;
+        }
 
         lastMessage.timeDate = new Date();
         lastMessage.time = Date.now();
 
-        if (lastMessage.unreadNumber === 0) {
-            lastMessage.unreadNumber = 1;
-          } else {
-            lastMessage.unreadNumber++;
-          }
 //      if user which send message is not current user, increase unread number
         if (message.fromUserId !== this.friendId && message.fromUserId !== this.userId) {
           if (lastMessage.unreadNumber === null || lastMessage.unreadNumber === 0) {
@@ -154,7 +192,9 @@ export class ChatComponent implements OnInit {
           newLastChat.userId = user.userId;
           newLastChat.userName = user.userName;
           newLastChat.avatar = user.avatar;
-          newLastChat.unreadNumber = 1;
+          if (message.fromUserId !== this.friendId && message.fromUserId !== this.userId) {
+            newLastChat.unreadNumber = 1;
+          }
           this.listConversasions.push(newLastChat);
 
           this.listConversasions.sort( (last1: LastChat, last2: LastChat) => {

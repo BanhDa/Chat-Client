@@ -26,8 +26,11 @@
         <div class="row message-body" *ngFor="let message of messages">
           <div class="col-sm-12 message-main-receiver" *ngIf="message.toUserId === userId">
             <div class="receiver">
-              <div class="message-text">
+              <div class="message-text" *ngIf="message.messageType === messageText">
                {{message.value}}
+              </div>
+              <div class="message-text" *ngIf="message.messageType === messageImage">
+               	<app-chatimage [imageId]="message.value"></app-chatimage>
               </div>
               <span class="message-time pull-right" *ngIf="message.readTime">
                 Seen!
@@ -37,8 +40,11 @@
           
           <div class="col-sm-12 message-main-sender" *ngIf="message.fromUserId === userId">
             <div class="sender">
-              <div class="message-text">
+              <div class="message-text" *ngIf="message.messageType === messageText">
                 {{message.value}}
+              </div>
+              <div class="message-text" *ngIf="message.messageType === messageImage">
+               	<app-chatimage [imageId]="message.value"></app-chatimage>
               </div>
               <span class="message-time pull-right" *ngIf="message.readTime">
                 Seen!
@@ -55,7 +61,18 @@
 	          <i class="fa fa-smile-o fa-2x"></i>
 	        </div>
 	        <div class="col-sm-1 col-xs-1 reply-emojis">
-	        	<i class="glyphicon glyphicon-picture"></i>
+	        <i class="glyphicon glyphicon-picture" (click)="uploadFile()"></i>
+	        <!--
+	         	<image-upload
+			  [max]="100"
+			  [url]="'http://localhost:8080/file/uploadimage'"
+			  [headers]="{header: 'Authorization', value: token}"
+			  [buttonCaption]="'Select Images!'"
+			  [dropBoxMessage]="'Drop your images here!'"
+			  (onFileUploadFinish)="imageUploaded($event)"
+			></image-upload>
+	         -->
+	         
 	        </div>
 	        
 	        <div class="col-sm-9 col-xs-9 reply-main input">
@@ -68,4 +85,5 @@
 	        </div>
     	</div>
    	</form>
+   	<input #uploadImage  type="file" name="single" name="image" accept="image/*" (change)="handleInputImageChange($event)"/>
 </div>

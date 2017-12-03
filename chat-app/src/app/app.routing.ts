@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { LoginComponent } from './component/login/login.component';
 import { ChatComponent } from './component/chat/chat.component';
-import { ConversationComponent } from './component/conversation/conversation.component';
+import { ConversationComponent } from './component/chathistory/conversation.component';
 import { UserdetailComponent } from './component/userdetail/userdetail.component';
 
 const appRoutes: Routes = [
