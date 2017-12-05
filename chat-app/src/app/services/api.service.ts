@@ -16,8 +16,6 @@ export class ApiService {
   constructor(private http: Http) {
     this.headers = new Headers();
     this.headers.append('Content-Type', 'application/json');
-    console.log('constructor api service token');
-    console.log(localStorage.getItem('token'));
     this.headers.append('Authorization', localStorage.getItem('token'));
     this.options = new RequestOptions({ headers: this.headers, method: 'post'});
   }
@@ -38,9 +36,7 @@ export class ApiService {
   }
 
   postImage(url: string, data: any): Observable<ResponseData> {
-    console.log('call api');
     this.addHeaders();
-    console.log(JSON.stringify(data));
     return this.http.post(url, data, this.options).map( (response: Response) => {
       return this.extractData(response);
     }).catch(this.handleError);
@@ -57,7 +53,6 @@ export class ApiService {
 
   private extractData(res: Response) {
     const body = res.json();
-    console.log('response');
     return body || {};
   }
 

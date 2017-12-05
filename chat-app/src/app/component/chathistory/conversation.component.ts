@@ -23,18 +23,14 @@ import { Observable } from 'rxjs/Observable';
 export class ConversationComponent implements OnInit, OnChanges {
 
   @ViewChild('uploadImage') uploadImage: ElementRef;
+  @ViewChild('conversationElement') private myScrollContainer: ElementRef;
 
   @Output('eventChat')
   eventChat: EventEmitter<Message> = new EventEmitter();
 
   @Input()
   public friendId: string;
-  public newMessage: Message;
-  @Input()
-  set message(message: Message) {
-    console.log('new message');
-    console.log(message);
-  }
+  @Input() newMessage: Message;
 
   public friend = new User();
   public friendAvatarSrc = Constant.DEFAULT_AVATAR;
@@ -65,6 +61,7 @@ export class ConversationComponent implements OnInit, OnChanges {
     this.getChatHistory();
     this.getUserInfo();
     this.loadFriendAvatar();
+    this.markRead();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -73,7 +70,56 @@ export class ConversationComponent implements OnInit, OnChanges {
       console.log(this.friendId);
       this.getChatHistory();
       this.getUserInfo();
+      this.loadFriendAvatar();
+      this.markRead();
+    } else if (changes['newMessage']) {
+      console.log('event new message from server');
+      console.log(this.newMessage);
+      if (this.newMessage.toUserId === this.userId
+            && this.newMessage.fromUserId === this.friendId) {
+
+        if (this.newMessage.messageType === MessageType.IMAGE
+              || this.newMessage.messageType === MessageType.TEXT) {
+          this.messages.push(this.newMessage);
+          this.markRead();
+        } else if (this.newMessage.messageType === MessageType.READ) {
+          this.updateReadTime();
+        }
+      }
     }
+  }
+
+  updateReadTime() {
+    if (this.messages !== null && this.messages.length > 0) {
+      let i = 0;
+      for (i = 0; i < this.messages.length; i++) {
+        const message: Message = this.messages[i];
+        if (message.readTime === undefined || message.readTime === null || message.readTime === '') {
+          const now = new Date();
+          message.readTime = now.toDateString();
+          this.messages[i] = message;
+        }
+      }
+    }
+  }
+
+  markRead() {
+    console.log('mark read');
+    const messageRead = new Message();
+    messageRead.fromUserId = this.userId;
+    messageRead.toUserId = this.friendId;
+    messageRead.messageType = MessageType.READ;
+    messageRead.token = this.token;
+
+    this.chatService.sendMessage(messageRead);
+    this.updateReadTime();
+  }
+
+  private scrollToBottom(): void {
+    console.log('scrollToBottom');
+    try {
+        this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+    } catch (err) { }
   }
 
   loadFriendAvatar() {
@@ -97,6 +143,7 @@ export class ConversationComponent implements OnInit, OnChanges {
       if (data.code === ReponseCode.SUCCESSFUL) {
         this.messages = data.data;
         console.log(this.messages);
+        this.scrollToBottom();
       } else if (data.code === ReponseCode.INVALID_TOKEN) {
         localStorage.clear();
         this.router.navigate(['/login']);
@@ -124,10 +171,8 @@ export class ConversationComponent implements OnInit, OnChanges {
       this.socketService.socket.on(event, (message: Message) => {
         console.log('reveiver data from server');
         console.log(message);
-        console.log('list messae');
-        console.log(this.messages);
         this.messages.push(message);
-        console.log(this.messages);
+        this.scrollToBottom();
         this.eventChat.emit(message);
       });
     }
@@ -160,8 +205,8 @@ export class ConversationComponent implements OnInit, OnChanges {
       message.token = this.token;
 
       this.messages.push(message);
+      this.scrollToBottom();
       this.chatService.sendMessage(message);
-
       this.inputMessage = '';
 
       this.eventChat.emit(message);
@@ -195,45 +240,33 @@ export class ConversationComponent implements OnInit, OnChanges {
   handleInputImageChange(event) {
     console.log('upload image');
     const image = event.target.files[0];
-    console.log(image);
-    console.log(event.target.files[0]);
-        const pattern = /image-*/;
-        const reader = new FileReader();
+    const pattern = /image-*/;
+    const reader = new FileReader();
 
-        if (!image.type.match(pattern)) {
-            alert('invalid format');
-            return;
-        }
+    if (!image.type.match(pattern)) {
+        alert('invalid format');
+        return;
+    }
 
 //        this.loaded = false;
 //        reader.onload = this._handleReaderLoaded.bind(this);
 
 
-        reader.readAsDataURL(image);
+    reader.readAsDataURL(image);
 
     reader.onloadend = () => {
-            console.log('image source');
-            console.log(reader.result);
-
         this.fileService.postFormData(image).subscribe ( (data: ResponseData) => {
-          console.log('data upload image chat');
-          console.log(data);
           const dataObject = JSON.parse(data.toString());
-          console.log(dataObject);
           if (dataObject.code === ReponseCode.SUCCESSFUL) {
             const userImage: UserImage = dataObject.data;
-            console.log(userImage.imageId);
             this.sendMessageFile(MessageType.IMAGE, userImage.imageId);
           }
-      } );
+        } );
     };
 
   }
 
  uploadFile() {
-    console.log('trigger');
-    console.log(this.uploadImage);
-    console.log(this.uploadImage.nativeElement);
     const event = new MouseEvent('click', {bubbles: true});
     this.renderer.invokeElementMethod(
     this.uploadImage.nativeElement, 'dispatchEvent', [event]);

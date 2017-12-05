@@ -19,11 +19,8 @@ export class ChatimageComponent implements OnInit {
   constructor(private fileService: FileService) {}
 
   ngOnInit() {
-    console.log('init image id');
-    console.log(this.imageId);
     this.fileService.getImageData(this.imageId).subscribe( (data: ResponseData) => {
       const image = 'data:image/jpeg;base64,' + data.data;
-      console.log(image);
       this.imageSrc = image;
       this.imageLoaded = true;
     });
@@ -34,7 +31,6 @@ export class ChatimageComponent implements OnInit {
     console.log(this.imageId);
     this.fileService.getImageData(this.imageId).subscribe( (data: ResponseData) => {
       const image = 'data:image/jpeg;base64,' + data.data;
-      console.log(image);
       this.imageSrc = image;
       this.imageLoaded = true;
     });

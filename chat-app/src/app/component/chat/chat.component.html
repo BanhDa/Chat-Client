@@ -49,8 +49,9 @@
               <div class="row">
                 <div class="col-sm-7 col-xs-7 sideBar-name">
                   <span class="name-meta"> {{conversation.userName}} </span><br>
-                  <span class="time-meta" *ngIf="conversation.messageType === messageText"> {{conversation.value}} </span>
-                  <span class="time-meta" *ngIf="conversation.messageType === messageImage"> [Image] </span>
+                  <span class="time-meta" *ngIf="conversation.messageType === messageText"> {{conversation.value}} </span><br>
+                  <span class="time-meta" *ngIf="conversation.messageType === messageImage"> [Image] </span><br>
+                  <i class="fa fa-check-circle" aria-hidden="true" *ngIf="conversation.readTime"></i>
                 </div>
                 <div class="col-sm-3 col-xs-3 pull-right sideBar-time">
                   <span class="time-meta pull-right"> {{conversation.timeDate | date:'shortTime'}} </span>
@@ -106,7 +107,7 @@
     </div>
 
 	<div *ngIf="ischatHistory">
-		<app-conversation [friendId]="friendId" [message]="newMessage" (eventChat)="onChange($event)"></app-conversation>
+		<app-conversation [friendId]="friendId" [newMessage]="newMessage" (eventChat)="onChange($event)"></app-conversation>
 	</div>
 	 
 	 

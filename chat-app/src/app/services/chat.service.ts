@@ -28,7 +28,6 @@ export class ChatService {
   // Our simplified interface for sending
   // messages back to our socket.io server
   sendMessage(msg: Message) {
-    console.log(msg);
     this.messages.next(msg);
   }
 

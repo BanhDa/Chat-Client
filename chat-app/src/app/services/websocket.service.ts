@@ -42,9 +42,17 @@ export class WebsocketService {
         },
     };
 
+    const observerEventRead = {
+      read: (data: Object) => {
+        console.log('send message read');
+        console.log(data);
+        this.socket.emit(Socket.EVENT_MARK_READ, data);
+      }
+    };
+
     // we return our Rx.Subject which is a combination
     // of both an observer and observable.
-    return Rx.Subject.create(observer, observable);
+    return Rx.Subject.create(observer, observerEventRead, observable);
   }
 
 //  on(event: string, callBack: any): Observable<Message> {

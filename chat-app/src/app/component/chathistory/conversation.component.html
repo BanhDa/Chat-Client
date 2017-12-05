@@ -14,7 +14,7 @@
         </div>
       </div>
 
-      <div class="row message" id="conversation">
+      <div class="row message" id="conversation" #conversationElement>
         <div class="row message-previous">
           <div class="col-sm-12 previous">
             <a id="ankitjain28">
@@ -32,9 +32,6 @@
               <div class="message-text" *ngIf="message.messageType === messageImage">
                	<app-chatimage [imageId]="message.value"></app-chatimage>
               </div>
-              <span class="message-time pull-right" *ngIf="message.readTime">
-                Seen!
-              </span>
             </div>
           </div>
           
@@ -85,5 +82,5 @@
 	        </div>
     	</div>
    	</form>
-   	<input #uploadImage  type="file" name="single" name="image" accept="image/*" (change)="handleInputImageChange($event)"/>
+   	<input #uploadImage  type="file" name="single" name="image" accept="image/*" (change)="handleInputImageChange($event)" style="display: none"/>
 </div>

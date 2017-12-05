@@ -3,6 +3,7 @@ import { ReponseCode } from '../../common/response.code';
 import { LastChat } from '../../entity/message/lastchat';
 import { Message } from '../../entity/message/message';
 import { MessageType } from '../../entity/message/messagetype';
+import { Socket } from '../../entity/message/socket';
 import { ResponseData } from '../../entity/response.data';
 import { User } from '../../entity/user';
 import { ChatService } from '../../services/chat.service';
@@ -54,6 +55,7 @@ export class ChatComponent implements OnInit {
       this.router.navigate(['/login']);
     }
     this.listenMessageChat();
+    this.listenMessageRead();
     this.chatService.connectServer(this.token);
     this.getChatConversation();
     this.loadAvatar();
@@ -72,8 +74,37 @@ export class ChatComponent implements OnInit {
 
   listenMessageChat() {
     this.on('chat', (data) => {
-      console.log(data);
     });
+  }
+
+  listenMessageRead() {
+    if (this.existsEvent(Socket.EVENT_MARK_READ)) {
+      return;
+    }
+    this.socketService.events.push(Socket.EVENT_MARK_READ);
+    if (this.socketService.socket) {
+      this.socketService.socket.on(Socket.EVENT_MARK_READ, (message: Message) => {
+        console.log('reveiver msg read from server');
+        console.log(message);
+        this.newMessage = message;
+        this.updateReadTimeLastChat(message.fromUserId);
+      });
+    }
+  }
+
+  updateReadTimeLastChat(friendId: string) {
+    if (this.listConversasions !== null && this.listConversasions.length !== 0) {
+      let i = 0;
+      for (i = 0; i < this.listConversasions.length; i++) {
+        const lastChat = this.listConversasions[i];
+        if (friendId === lastChat.fromUserId || friendId === lastChat.toUserId) {
+          const now = new Date();
+          lastChat.readTime = now.toDateString();
+          this.listConversasions[i] = lastChat;
+          return;
+        }
+      }
+    }
   }
 
   on(event: string, callBack: any): Observable<Message> {
@@ -110,6 +141,21 @@ export class ChatComponent implements OnInit {
 
     this.isListConversation = true;
     this.friendId = friendId;
+    this.markRead(friendId);
+  }
+
+  markRead(friendId: string) {
+    if (this.listConversasions !== null && this.listConversasions.length !== 0) {
+      let i = 0;
+      for (i = 0; i < this.listConversasions.length; i++) {
+        const lastChat = this.listConversasions[i];
+        if (friendId === lastChat.fromUserId || friendId === lastChat.toUserId) {
+          lastChat.unreadNumber = 0;
+          this.listConversasions[i] = lastChat;
+          return;
+        }
+      }
+    }
   }
 
   userDetail(userId: string) {
