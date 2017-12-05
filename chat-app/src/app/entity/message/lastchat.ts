@@ -1,11 +1,12 @@
+import { Constant } from '../../common/constant';
 export class LastChat {
 
-  public userId: string;
+  public friendId: string;
   public userName: string;
   public email: string;
   public birthday: string;
   public gender: string;
-  public avatar: string;
+  public avatar = '';
 
   public id: string;
   public messageId: string;
@@ -17,6 +18,7 @@ export class LastChat {
   public value: string;
 
   public timeDate: Date;
-  public unreadNumber = 90;
+  public unreadNumber: number;
+  public avatarSrc = Constant.DEFAULT_AVATAR;
 
 }

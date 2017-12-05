@@ -29,8 +29,15 @@ export class ConversationComponent implements OnInit, OnChanges {
 
   @Input()
   public friendId: string;
+  public newMessage: Message;
+  @Input()
+  set message(message: Message) {
+    console.log('new message');
+    console.log(message);
+  }
 
   public friend = new User();
+  public friendAvatarSrc = Constant.DEFAULT_AVATAR;
 
   public token = localStorage.getItem(Constant.TOKEN);
   public userId = localStorage.getItem(Constant.USER_ID);
@@ -57,6 +64,7 @@ export class ConversationComponent implements OnInit, OnChanges {
     this.listenMessageChat();
     this.getChatHistory();
     this.getUserInfo();
+    this.loadFriendAvatar();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -66,6 +74,15 @@ export class ConversationComponent implements OnInit, OnChanges {
       this.getChatHistory();
       this.getUserInfo();
     }
+  }
+
+  loadFriendAvatar() {
+    console.log('load avat friend');
+    this.fileService.getImageData(this.friendId).subscribe( (data: ResponseData) => {
+      if (data.code === ReponseCode.SUCCESSFUL) {
+        this.friendAvatarSrc = Constant.BASE64_HEADER + data.data;
+      }
+    });
   }
 
   listenMessageChat() {
@@ -107,8 +124,10 @@ export class ConversationComponent implements OnInit, OnChanges {
       this.socketService.socket.on(event, (message: Message) => {
         console.log('reveiver data from server');
         console.log(message);
-
+        console.log('list messae');
+        console.log(this.messages);
         this.messages.push(message);
+        console.log(this.messages);
         this.eventChat.emit(message);
       });
     }
@@ -176,7 +195,7 @@ export class ConversationComponent implements OnInit, OnChanges {
   handleInputImageChange(event) {
     console.log('upload image');
     const image = event.target.files[0];
-console.log(image);
+    console.log(image);
     console.log(event.target.files[0]);
         const pattern = /image-*/;
         const reader = new FileReader();

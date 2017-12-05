@@ -1,6 +1,7 @@
 /**
  * New typescript file
  */
+import { Constant } from '../../common/constant';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {Router, Routes} from '@angular/router';
@@ -39,6 +40,8 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('user', JSON.stringify(data.data) );
         localStorage.setItem('userId', this.loginUser.userId);
         localStorage.setItem('token', data.token);
+        console.log('get token from loacal');
+        console.log(localStorage.getItem(Constant.TOKEN));
         this.router.navigate(['/chat']);
       }
     });

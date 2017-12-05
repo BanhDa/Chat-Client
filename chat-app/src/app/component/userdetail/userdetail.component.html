@@ -49,12 +49,19 @@
                     <div class="panel-body">
                         <div class="row-fluid">
                             <div class="span3">
-                                <img class="img-circle"
+                                <a (click)="uploadAvatar()">
+                                	<img class="img-circle" style="height: 300px; width: 300px; cursor: pointer;" *ngIf="avatarSrc === ''"
                                      src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=100"
-                                     alt="User Pic">
+                                     alt="Avatar">
+                                     
+                                     <img class="img-circle" style="height: 300px; width: 300px; cursor: pointer;" *ngIf="avatarSrc !== ''"
+                                     [src]="avatarSrc"
+                                     alt="Avatar">
+                                </a>
+                                <input #avatarInput type="file" name="file" accept="image/*"
+        								(change)="handleInputImageChange($event)" style="display: none">
                             </div>
                             <div class="span6">
-                                <strong>{{userDetail.userName}}</strong><br>
                                 <table class="table table-condensed table-responsive table-user-information">
                                     <tbody>
                                     <tr>
@@ -71,7 +78,8 @@
                                     </tr>
                                     <tr>
                                         <td>Gender:</td>
-                                        <td>{{userDetail.gender}}</td>
+                                        <td *ngIf="userDetail.gender === 1">Male</td>
+                                        <td *ngIf="userDetail.gender === 0">Female</td>
                                     </tr>
                                     </tbody>
                                 </table>

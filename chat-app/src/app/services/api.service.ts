@@ -1,6 +1,7 @@
 /**
  * New typescript file
  */
+import { Constant } from '../common/constant';
 import { ResponseData } from '../entity/response.data';
 import { Injectable } from '@angular/core';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
@@ -11,7 +12,6 @@ export class ApiService {
 
   headers: Headers;
   options: RequestOptions;
-  token = localStorage.getItem('token');
 
   constructor(private http: Http) {
     this.headers = new Headers();
@@ -48,18 +48,16 @@ export class ApiService {
 
   addHeaders() {
     console.log('add headers');
-    console.log(this.token);
     this.headers = new Headers();
     this.headers.append('Content-Type', 'application/json');
-    this.headers.append('Authorization', this.token);
+    this.headers.append('Authorization', localStorage.getItem(Constant.TOKEN));
+    console.log(this.headers);
     this.options = new RequestOptions({ headers: this.headers, method: 'post'});
   }
 
   private extractData(res: Response) {
     const body = res.json();
     console.log('response');
-    console.log(res);
-    console.log(body);
     return body || {};
   }
 

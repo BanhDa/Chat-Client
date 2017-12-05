@@ -7,7 +7,7 @@
         <div class="row heading">
           <div class="col-sm-3 col-xs-3 heading-avatar">
             <div class="heading-avatar-icon"  (click)="userDetail(userId)">
-              <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
+              <img [src]="avatarUser">
             </div>
           </div>
           <div class="col-sm-1 col-xs-1  heading-dot  pull-right">
@@ -39,10 +39,10 @@
 
         <div class="row sideBar" *ngIf="isListConversation">
         
-          <div class="row sideBar-body" (click)="chatHistory(conversation.userId)" *ngFor="let conversation of listConversasions">
+          <div class="row sideBar-body" (click)="chatHistory(conversation.friendId)" *ngFor="let conversation of listConversasions">
             <div class="col-sm-3 col-xs-3 sideBar-avatar">
               <div class="avatar-icon">
-                <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
+                <img [src]="conversation.avatarSrc">
               </div>
             </div>
             <div class="col-sm-9 col-xs-9 sideBar-main">
@@ -56,7 +56,7 @@
                   <span class="time-meta pull-right"> {{conversation.timeDate | date:'shortTime'}} </span>
                 </div>
                 <div class="col-sm-2 col-xs-2 ">
-                  <span class="badge unread-number">{{conversation.unreadNumber}}</span>
+                  <span class="badge unread-number" *ngIf="conversation.unreadNumber > 0">{{conversation.unreadNumber}}</span>
                 </div>
               </div>
             </div>
@@ -106,7 +106,7 @@
     </div>
 
 	<div *ngIf="ischatHistory">
-		<app-conversation [friendId]="friendId" (eventChat)="onChange($event)"></app-conversation>
+		<app-conversation [friendId]="friendId" [message]="newMessage" (eventChat)="onChange($event)"></app-conversation>
 	</div>
 	 
 	 

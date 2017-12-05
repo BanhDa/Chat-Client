@@ -6,6 +6,7 @@ import { MessageType } from '../../entity/message/messagetype';
 import { ResponseData } from '../../entity/response.data';
 import { User } from '../../entity/user';
 import { ChatService } from '../../services/chat.service';
+import { FileService } from '../../services/file.service';
 import { UserService } from '../../services/user.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { Component, OnInit } from '@angular/core';
@@ -23,6 +24,9 @@ export class ChatComponent implements OnInit {
   public friendId = '';
   public userId = localStorage.getItem(Constant.USER_ID);
   public token = localStorage.getItem(Constant.TOKEN);
+  public avatarUser = Constant.DEFAULT_AVATAR;
+  public userInfo: User = JSON.parse( localStorage.getItem( Constant.USER) );
+  public newMessage: Message;
 
   public isUserDetail = false;
   public ischatHistory = false;
@@ -39,17 +43,31 @@ export class ChatComponent implements OnInit {
   constructor(private router: Router,
           private userService: UserService,
           private socketService: WebsocketService,
-        private chatService: ChatService) { }
+          private chatService: ChatService,
+          private fileService: FileService) { }
 
   ngOnInit() {
 
+    console.log('init chat');
+    console.log(this.token);
     if (!this.token) {
       this.router.navigate(['/login']);
     }
     this.listenMessageChat();
     this.chatService.connectServer(this.token);
     this.getChatConversation();
+    this.loadAvatar();
+  }
 
+  loadAvatar() {
+    console.log('load avat');
+    this.fileService.getAvatar().subscribe( (data: ResponseData) => {
+      if (data.code === ReponseCode.SUCCESSFUL) {
+        const image = Constant.BASE64_HEADER + data.data;
+        console.log(image);
+        this.avatarUser = image;
+      }
+    });
   }
 
   listenMessageChat() {
@@ -65,9 +83,9 @@ export class ChatComponent implements OnInit {
     this.socketService.events.push(event);
     if (this.socketService.socket) {
       this.socketService.socket.on(event, (message: Message) => {
-        console.log('reveiver data from server');
+        console.log('reveiver data from serverrrrrrrrr');
         console.log(message);
-
+        this.newMessage = message;
         this.onChange(message);
       });
     }
@@ -107,10 +125,15 @@ export class ChatComponent implements OnInit {
     console.log('chat conversation');
     this.chatService.getChatConversasion().subscribe((data: ResponseData) => {
       if (data.code === ReponseCode.SUCCESSFUL) {
+        console.log(data);
         this.isListConversation = true;
         this.isSearchUser = false;
         this.listConversasions = data.data;
-        this.updateLastChatDateTime();
+
+//        format send time
+//        this.updateLastChatDateTime();
+
+        this.loadAvatarListConversation();
       } else if (data.code === ReponseCode.INVALID_TOKEN) {
         localStorage.clear();
         this.router.navigate(['/login']);
@@ -118,12 +141,36 @@ export class ChatComponent implements OnInit {
     });
   }
 
+  loadAvatarListConversation() {
+    if (this.listConversasions !== null && this.listConversasions.length !== 0) {
+      let i = 0;
+      for (i = 0; i < this.listConversasions.length; i++) {
+        const avatarId = this.listConversasions[i].avatar;
+        this.listConversasions[i].avatarSrc = Constant.DEFAULT_AVATAR;
+        if (avatarId !== null && avatarId.trim() !== '') {
+            this.fileService.getImageData(avatarId).subscribe((data: ResponseData) => {
+              if (data.code === ReponseCode.SUCCESSFUL) {
+                this.listConversasions[i].avatarSrc = Constant.BASE64_HEADER + data.data;
+                console.log(this.listConversasions[i]);
+              }
+            });
+        }
+
+      }
+    }
+  }
+
   updateLastChatDateTime() {
     let i = 0;
     console.log('update last chat time');
     for (i = 0; i < this.listConversasions.length; i++) {
       const time = this.listConversasions[i].time;
+      console.log(time);
       this.listConversasions[i].timeDate = new Date(time);
+      console.log(new Date());
+      const now = Date.now();
+      console.log(now);
+      console.log(new Date(now));
       console.log(this.listConversasions[i].timeDate);
     }
   }
@@ -149,6 +196,10 @@ export class ChatComponent implements OnInit {
     });
   }
 
+  onChang(imageSrc: string) {
+    console.log('change avatar');
+  }
+
   onChange(message: Message) {
 //    push last chat
     console.log('update last chat');
@@ -158,8 +209,8 @@ export class ChatComponent implements OnInit {
     let i = 0;
     for (i = 0; i < this.listConversasions.length; i++) {
       const lastMessage = this.listConversasions[i];
-      if (lastMessage.userId === message.toUserId
-        || lastMessage.userId === message.fromUserId) {
+      if (lastMessage.friendId === message.toUserId
+        || lastMessage.friendId === message.fromUserId) {
 
         if (message.messageType === MessageType.TEXT) {
           lastMessage.value = message.value;
@@ -178,7 +229,7 @@ export class ChatComponent implements OnInit {
             lastMessage.unreadNumber++;
           }
         }
-
+        this.listConversasions[i] = lastMessage;
         newChat = false;
       }
     }
@@ -186,10 +237,10 @@ export class ChatComponent implements OnInit {
     if (newChat) {
       const newLastChat = this.parseMessageIntoLastChat(message);
 
-      this.userService.getUser(this.friendId).subscribe ( (data: ResponseData) => {
+      this.userService.getUser(message.fromUserId).subscribe ( (data: ResponseData) => {
         if (data.code === ReponseCode.SUCCESSFUL) {
           const user: User = data.data;
-          newLastChat.userId = user.userId;
+          newLastChat.friendId = user.userId;
           newLastChat.userName = user.userName;
           newLastChat.avatar = user.avatar;
           if (message.fromUserId !== this.friendId && message.fromUserId !== this.userId) {
@@ -197,20 +248,17 @@ export class ChatComponent implements OnInit {
           }
           this.listConversasions.push(newLastChat);
 
-          this.listConversasions.sort( (last1: LastChat, last2: LastChat) => {
-            return last1.time > last2.time ? 1 : last1.time === last2.time ? 0 : -1;
-          } );
-
         } else if (data.code === ReponseCode.INVALID_TOKEN) {
           localStorage.clear();
           this.router.navigate(['/login']);
         }
         });
-    } else {
-      this.listConversasions.sort( (last1: LastChat, last2: LastChat) => {
-        return last1.time > last2.time ? 1 : last1.time === last2.time ? 0 : -1;
-      } );
     }
+
+    this.listConversasions.sort( (last1: LastChat, last2: LastChat) => {
+      return last1.time > last2.time ? -1 : last1.time === last2.time ? 0 : 1;
+    } );
+
   }
 
   parseMessageIntoLastChat(message: Message): LastChat {
@@ -223,7 +271,7 @@ export class ChatComponent implements OnInit {
     newLastChat.messageType = message.messageType;
     newLastChat.value = message.value;
 //  parse string to number by + operator
-    newLastChat.time = +message.time;
+    newLastChat.time = message.time;
     newLastChat.timeDate = new Date(message.time);
     newLastChat.readTime = message.readTime;
 

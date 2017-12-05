@@ -17,6 +17,30 @@ export class FileService {
     return this.apiService.postImage(url, formData);
   }
 
+  uploadAvatar(file: File): Observable<ResponseData> {
+    return Observable.fromPromise(new Promise((resolve, reject) => {
+      const formData: any = new FormData();
+      const xhr = new XMLHttpRequest();
+
+      formData.append('image', file, file.name);
+      formData.append('userid', localStorage.getItem(Constant.USER_ID));
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            resolve(xhr.response);
+          } else {
+            reject(xhr.response);
+          }
+        }
+      };
+
+  //    xhr.setRequestHeader('Authorization', localStorage.getItem('token'));
+      xhr.open('POST', Constant.BASE_URL + '/file/uploadavatar', true);
+      xhr.send(formData);
+    }));
+  }
+
   postFormData(file: File): Observable<ResponseData> {
     return Observable.fromPromise(new Promise((resolve, reject) => {
       const formData: any = new FormData();
@@ -47,5 +71,10 @@ export class FileService {
       const url = Constant.BASE_URL + '/file/loadimage?imageid=' + imageId;
       return this.apiService.post(url, '');
     }
+  }
+
+  getAvatar(): Observable<any> {
+    const url = Constant.BASE_URL + '/file/loadavatar';
+    return this.apiService.post(url, '');
   }
 }

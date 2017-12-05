@@ -1,4 +1,9 @@
 //Reusing bootstrap 3 panel CSS
+.avatar {
+    cursor: pointer;
+    height: 300px;
+    width: 300px;
+}
 .panel {
     background-color: #FFFFFF;
     border: 1px solid rgba(0, 0, 0, 0);

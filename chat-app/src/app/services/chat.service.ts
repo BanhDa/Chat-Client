@@ -44,7 +44,7 @@ export class ChatService {
     return this.apiService.post(url, JSON.stringify(data));
   }
 
-  getChatConversasion(): Observable<ResponseData> {
+  getChatConversasion(): Observable<ResponseData> {console.log(localStorage.getItem('token'));
     const url = Constant.BASE_URL + '/chat/conversations';
     return this.apiService.post(url, '');
   }
