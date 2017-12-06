@@ -1,0 +1,52 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<div *ngIf="visible" class="dialog">
+  <ng-content></ng-content>
+  <button *ngIf="closable" (click)="close()" aria-label="Close" class="dialog__close-btn">X</button>
+  
+    <div class="row-fluid user-infos cyruxx">
+          
+            <div class="span10 offset1">
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <div class="row-fluid">
+                            <div class="span3">
+                             	<img class="img-circle" style="height: 300px; width: 300px; cursor: pointer;" *ngIf="avatarSrc === ''"
+                                  src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=100"
+                                  alt="Avatar">
+                                  
+                                  <img class="img-circle" style="height: 300px; width: 300px; cursor: pointer;" *ngIf="avatarSrc !== ''"
+                                  [src]="avatarSrc"
+                                  alt="Avatar">
+                            </div>
+                            <div class="span6">
+                                <table class="table table-condensed table-responsive table-user-information">
+                                    <tbody>
+                                    <tr>
+                                        <td>User Name:</td>
+                                        <td>{{userDetail.userName}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Email:</td>
+                                        <td>{{userDetail.email}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Birthday:</td>
+                                        <td>{{userDetail.birthday}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Gender:</td>
+                                        <td *ngIf="userDetail.gender === 1">Male</td>
+                                        <td *ngIf="userDetail.gender === 0">Female</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+  
+</div>
+<div *ngIf="visible" class="overlay" (click)="close()"></div>

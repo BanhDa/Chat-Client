@@ -1,4 +1,9 @@
 <img class="image-chat"
    [src]="imageSrc" 
    (load)="handleImageLoad()" 
-   [class.loaded]="imageLoaded"/>
+   [class.loaded]="imageLoaded"
+   (click)="showImageChat()"/>
+   
+   <app-dialogimagechat [(visible)]="showDialogChatImage" [(imageSrc)]="imageSrc"></app-dialogimagechat>
+   
+   

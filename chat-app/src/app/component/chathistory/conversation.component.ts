@@ -34,6 +34,7 @@ export class ConversationComponent implements OnInit, OnChanges {
 
   public friend = new User();
   public friendAvatarSrc = Constant.DEFAULT_AVATAR;
+  public showDialogUserDetail = false;
 
   public token = localStorage.getItem(Constant.TOKEN);
   public userId = localStorage.getItem(Constant.USER_ID);
@@ -87,6 +88,10 @@ export class ConversationComponent implements OnInit, OnChanges {
         }
       }
     }
+  }
+
+  userDetail() {
+    this.showDialogUserDetail = !this.showDialogUserDetail;
   }
 
   updateReadTime() {

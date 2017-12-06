@@ -2,16 +2,19 @@
       <div class="row heading">
         <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
           <div class="heading-avatar-icon">
-            <img [src]="friendAvatarSrc">
+            <img [src]="friendAvatarSrc" (click)="userDetail()">
           </div>
         </div>
         <div class="col-sm-8 col-xs-7 heading-name">
           <a class="heading-name-meta">{{friend.userName}}
           </a>
         </div>
+        
+        <!-- 
         <div class="col-sm-1 col-xs-1  heading-dot pull-right">
           <i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
         </div>
+         -->
       </div>
 
       <div class="row message" id="conversation" #conversationElement>
@@ -54,21 +57,14 @@
     </div>
     <form (submit)="sendMessage()">
     	<div class="row reply footer">
+    	<!-- 
    			<div class="col-sm-1 col-xs-1 reply-emojis">
 	          <i class="fa fa-smile-o fa-2x"></i>
 	        </div>
+	        
+	    -->
 	        <div class="col-sm-1 col-xs-1 reply-emojis">
 	        <i class="glyphicon glyphicon-picture" (click)="uploadFile()"></i>
-	        <!--
-	         	<image-upload
-			  [max]="100"
-			  [url]="'http://localhost:8080/file/uploadimage'"
-			  [headers]="{header: 'Authorization', value: token}"
-			  [buttonCaption]="'Select Images!'"
-			  [dropBoxMessage]="'Drop your images here!'"
-			  (onFileUploadFinish)="imageUploaded($event)"
-			></image-upload>
-	         -->
 	         
 	        </div>
 	        
@@ -84,3 +80,5 @@
    	</form>
    	<input #uploadImage  type="file" name="single" name="image" accept="image/*" (change)="handleInputImageChange($event)" style="display: none"/>
 </div>
+
+<app-dialog [(visible)]="showDialogUserDetail" [(friendId)]="friendId"></app-dialog>

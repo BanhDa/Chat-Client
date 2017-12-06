@@ -22,7 +22,10 @@ import { Observable } from 'rxjs';
 })
 export class ChatComponent implements OnInit {
 
+  public showDialog = false;
+
   public friendId = '';
+  public userDetailId = '';
   public userId = localStorage.getItem(Constant.USER_ID);
   public token = localStorage.getItem(Constant.TOKEN);
   public avatarUser = Constant.DEFAULT_AVATAR;
@@ -161,10 +164,8 @@ export class ChatComponent implements OnInit {
   userDetail(userId: string) {
     console.log('user detail');
 
-    this.friendId = userId;
-    console.log(this.friendId);
-    this.ischatHistory = false;
-    this.isUserDetail = true;
+    this.userDetailId = userId;
+    this.showDialog = !this.showDialog;
   }
 
   getChatConversation() {

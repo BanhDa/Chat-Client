@@ -1,0 +1,9 @@
+<div  *ngIf="visible" class="dialog">
+  <ng-content></ng-content>
+	<img class="image-chat"
+   [src]="imageSrc" 
+   (load)="handleImageLoad()" 
+   [class.loaded]="imageLoaded"/>  
+  
+</div>
+<div *ngIf="visible" class="overlay" (click)="close()"></div>

@@ -23,6 +23,8 @@ import { ConversationComponent } from './component/chathistory/conversation.comp
 import { UserdetailComponent } from './component/userdetail/userdetail.component';
 import { ChatComponent } from './component/chat/chat.component';
 import { ChatimageComponent } from './component/chatimage/chatimage.component';
+import { DialogComponent } from './component/dialog/dialog.component';
+import { DialogimagechatComponent } from './component/dialogimagechat/dialogimagechat.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +33,9 @@ import { ChatimageComponent } from './component/chatimage/chatimage.component';
     ChatComponent,
     ConversationComponent,
     UserdetailComponent,
-    ChatimageComponent
+    ChatimageComponent,
+    DialogComponent,
+    DialogimagechatComponent
   ],
   imports: [
     BrowserModule,

@@ -1,3 +1,4 @@
+import { Constant } from '../../common/constant';
 import { ResponseData } from '../../entity/response.data';
 import { FileService } from '../../services/file.service';
 import { Component, OnInit, Input } from '@angular/core';
@@ -15,6 +16,8 @@ export class ChatimageComponent implements OnInit {
   public loaded = false;
   public imageLoaded = false;
   public imageSrc = '';
+
+  public showDialogChatImage = false;
 
   constructor(private fileService: FileService) {}
 
@@ -35,4 +38,9 @@ export class ChatimageComponent implements OnInit {
       this.imageLoaded = true;
     });
   }
+
+  showImageChat() {
+    this.showDialogChatImage = !this.showDialogChatImage;
+  }
+
 }
