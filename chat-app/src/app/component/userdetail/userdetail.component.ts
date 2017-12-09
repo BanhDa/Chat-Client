@@ -20,9 +20,14 @@ export class UserdetailComponent implements OnInit, OnChanges {
   @ViewChild('avatarInput') avatarInput: ElementRef;
   @Input() friendId: string;
   @Output('updateAvatarEvent') updateAvatarEvent: EventEmitter<String> = new EventEmitter();
+  @Output('updateUserInfoEvent') updateUserInfoEvent: EventEmitter<User> = new EventEmitter();
 
   avatarSrc = Constant.DEFAULT_AVATAR;
   userDetail = new User();
+  public friendUpdate = new User();
+  public messageAlert = '';
+  public showDialogAlert = false;
+  public isEditProfile = false;
 
   constructor(private userService: UserService,
         private router: Router,
@@ -45,6 +50,30 @@ export class UserdetailComponent implements OnInit, OnChanges {
     }
   }
 
+  updateUserInfo() {
+    console.log(this.friendUpdate);
+    if (this.friendUpdate !== undefined && this.friendUpdate !== null) {
+      this.userService.updateUserInfo(this.friendUpdate).subscribe( (data: ResponseData) => {
+        if (data.code === ReponseCode.SUCCESSFUL) {
+          this.userDetail = data.data;
+          this.isEditProfile = false;
+          this.updateUserInfoEvent.emit(this.userDetail);
+          localStorage.setItem(Constant.USER, JSON.stringify(this.userDetail));
+        } else if (data.code === ReponseCode.INVALID_TOKEN) {
+          localStorage.clear();
+          this.router.navigate(['/login']);
+        } else {
+          this.messageAlert = data.data;
+          this.showDialogAlert = !this.showDialogAlert;
+        }
+      });
+    }
+  }
+
+  cancel() {
+    this.isEditProfile = false;
+  }
+
   getUserInfo(userId: string) {
     this.userService.getUser(userId).subscribe ( (data: ResponseData) => {
         if (data.code === ReponseCode.SUCCESSFUL) {
@@ -53,6 +82,8 @@ export class UserdetailComponent implements OnInit, OnChanges {
         } else if (data.code === ReponseCode.INVALID_TOKEN) {
           localStorage.clear();
           this.router.navigate(['/login']);
+        } else {
+          this.showDialogAlertError(data.data);
         }
       });
   }
@@ -64,6 +95,11 @@ export class UserdetailComponent implements OnInit, OnChanges {
         const image = 'data:image/jpeg;base64,' + data.data;
         console.log(image);
         this.avatarSrc = image;
+      } else if (data.code === ReponseCode.INVALID_TOKEN) {
+        localStorage.clear();
+        this.router.navigate(['/login']);
+      } else {
+        this.showDialogAlertError(data.data);
       }
     });
   }
@@ -107,10 +143,20 @@ export class UserdetailComponent implements OnInit, OnChanges {
             this.userDetail.avatar = userImage.imageId;
             this.avatarSrc = reader.result;
             this.updateAvatarEvent.emit(this.avatarSrc);
+          } else if (data.code === ReponseCode.INVALID_TOKEN) {
+            localStorage.clear();
+            this.router.navigate(['/login']);
+          } else {
+            this.showDialogAlertError(data.data);
           }
           } );
     };
 
+  }
+
+  showEditProfile() {
+    this.friendUpdate = this.userDetail;
+    this.isEditProfile = true;
   }
 
   logout() {
@@ -123,7 +169,14 @@ export class UserdetailComponent implements OnInit, OnChanges {
       } else if (data.code === ReponseCode.INVALID_TOKEN) {
         localStorage.clear();
         this.router.navigate(['/login']);
+      } else {
+        this.showDialogAlertError(data.data);
       }
     });
+  }
+
+  showDialogAlertError(message: string) {
+    this.messageAlert = message;
+    this.showDialogAlert = !this.showDialogAlert;
   }
 }

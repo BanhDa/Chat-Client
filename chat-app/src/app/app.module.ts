@@ -25,6 +25,8 @@ import { ChatComponent } from './component/chat/chat.component';
 import { ChatimageComponent } from './component/chatimage/chatimage.component';
 import { DialogComponent } from './component/dialog/dialog.component';
 import { DialogimagechatComponent } from './component/dialogimagechat/dialogimagechat.component';
+import { ChatfileComponent } from './component/chatfile/chatfile.component';
+import { DialogalertComponent } from './component/dialogalert/dialogalert.component';
 
 @NgModule({
   declarations: [
@@ -35,16 +37,17 @@ import { DialogimagechatComponent } from './component/dialogimagechat/dialogimag
     UserdetailComponent,
     ChatimageComponent,
     DialogComponent,
-    DialogimagechatComponent
+    DialogimagechatComponent,
+    ChatfileComponent,
+    DialogalertComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-
+    BsDropdownModule.forRoot(),
     ModalModule.forRoot(),
     TooltipModule.forRoot(),
-    BsDropdownModule.forRoot(),
     AppRoutingModule,
     ImageUploadModule.forRoot(),
   ],

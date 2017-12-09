@@ -28,11 +28,11 @@ export class ApiService {
     }).catch(this.handleError);
   }
 
-  getImage(url: string): Observable<any> {
+  getFile(url: string): Observable<any> {
     this.addHeaders();
     return this.http.get(url, this.options).map( (response: any) => {
       return response;
-    });
+    }).catch(this.handleError);
   }
 
   postImage(url: string, data: any): Observable<ResponseData> {

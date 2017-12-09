@@ -1,40 +1,11 @@
-<!-- 
-<div class="col-sm-8 conversation">
-      <div class="row heading">
-        <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
-          <div class="heading-avatar-icon">
-            <img src="https://bootdey.com/img/Content/avatar/avatar6.png">
-          </div>
-        </div>
-        <div class="col-sm-8 col-xs-7 heading-name">
-          <a class="heading-name-meta">John Doe
-          </a>
-          <span class="heading-online">Online</span>
-        </div>
-        
-        
-        <div class="col-sm-1 col-xs-1  heading-dot pull-right">
-          <i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
-        </div>
-        
-         
-      </div>
 
-      
-
-      
-    </div>
-    
-    -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <div class="row-fluid user-infos cyruxx">
           
           <div class=" btn-group col-sm-1 col-xs-1  heading-dot  pull-right" dropdown>
             <i class="fa fa-ellipsis-v fa-2x" dropdownToggle></i>  
             <ul *dropdownMenu class="dropdown-menu" role="menu">
-			    <li role="menuitem"><a class="dropdown-item" href="#">Action</a></li>
-			    <li role="menuitem"><a class="dropdown-item" href="#">Another action</a></li>
-			    <li role="menuitem"><a class="dropdown-item" href="#">Something else here</a></li>
+			    <li role="menuitem"><a class="dropdown-item" (click)="showEditProfile()">Edit profile</a></li>
 			    <li class="divider dropdown-divider"></li>
 			    <li role="menuitem"><a class="dropdown-item" (click)="logout()">Logout</a>
 			    </li>
@@ -60,26 +31,58 @@
                                 </a>
                                 <input #avatarInput type="file" name="file" accept="image/*"
         								(change)="handleInputImageChange($event)" style="display: none">
-                            </div>
+                            </div><br>
                             <div class="span6">
                                 <table class="table table-condensed table-responsive table-user-information">
                                     <tbody>
                                     <tr>
                                         <td>User Name:</td>
-                                        <td>{{userDetail.userName}}</td>
+                                        <td *ngIf="!isEditProfile">{{userDetail.userName}}</td>
+                                        <td *ngIf="isEditProfile">
+	                                        <input type="text" class="input" placeholder="User name" [(ngModel)]="friendUpdate.userName"
+													class="form-control form-edit">
+										</td>
                                     </tr>
                                     <tr>
                                         <td>Email:</td>
-                                        <td>{{userDetail.email}}</td>
+                                        <td *ngIf="!isEditProfile">{{userDetail.email}}</td>
+                                        <td *ngIf="isEditProfile">
+	                                        <input id="registerEmail" type="text" class="input" placeholder="Email" [(ngModel)]="friendUpdate.email"
+													name="registerEmail" class="form-control form-edit">
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="isEditProfile">
+                                        <td>Password:</td>
+                                        <td>
+	                                        <input  type="password" class="input"  [(ngModel)]="friendUpdate.password"
+													name="" class="form-control form-edit">
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>Birthday:</td>
-                                        <td>{{userDetail.birthday}}</td>
+                                        <td *ngIf="!isEditProfile">{{userDetail.birthday}}</td>
+                                        <td *ngIf="isEditProfile">
+                                        	<input type="date" id="date" name="date" class="input" placeholder="1995" [(ngModel)]="friendUpdate.birthday" class="form-control form-edit">
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>Gender:</td>
-                                        <td *ngIf="userDetail.gender === 1">Male</td>
-                                        <td *ngIf="userDetail.gender === 0">Female</td>
+                                        <td *ngIf="userDetail.gender === 1 && !isEditProfile">Male</td>
+                                        <td *ngIf="userDetail.gender === 0 && !isEditProfile">Female</td>
+                                        <td *ngIf="isEditProfile">
+                                        	<select id="user" class="input" [(ngModel)]="friendUpdate.gender" class="form-control form-edit">
+												<option value="1">Male</option>
+												<option value="0">Female</option>
+											</select>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="isEditProfile">
+                                        <td></td>
+                                        <td>
+	                                        <input type="button" class="btn btn-primary button-update" value="Save Changes" (click)="updateUserInfo()">
+							              	<span></span>
+							              	<input type="reset" class="btn btn-default button-cancel" value="Cancel" (click)="cancel()">
+                                        </td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -90,3 +93,5 @@
                 </div>
             </div>
         </div>
+        
+        <app-dialogalert [(visible)]="showDialogAlert" [(messageAlert)]="messageAlert"></app-dialogalert>      

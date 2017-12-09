@@ -1,5 +1,6 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 <div class="container app">
   <div class="row app-one">
     <div class="col-sm-4 side">
@@ -10,15 +11,19 @@
               <img [src]="avatarUser">
             </div>
           </div>
-          <div class="col-sm-1 col-xs-1  heading-dot  pull-right">
-            <i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
+          <div class="col-sm-7 col-xs-7 heading-compose">
+	          <div style="margin-top: 4%;">
+	          <span style="font-size: 20px">{{userInfo.userName}}</span>
+	          </div>
           </div>
-          <div class="col-sm-2 col-xs-2 heading-compose  pull-right" dropdown>
+          <div class="col-sm-2 col-xs-2 heading-compose  pull-right">
            	<i class="fa fa-comments fa-2x  pull-right" (click)="getChatConversation()">
            	</i>
           </div>
+          
         </div>
-
+        
+        
         <div class="row searchBox">
           <div class="col-sm-12 searchBox-inner">
           
@@ -36,7 +41,6 @@
             </div>
           </div>
         </div>
-
         <div class="row sideBar" *ngIf="isListConversation">
         
           <div class="row sideBar-body" (click)="chatHistory(conversation.friendId)" *ngFor="let conversation of listConversasions">
@@ -70,7 +74,7 @@
           <div class="row sideBar-body" (click)="chatHistory(searchUser.userId)" *ngFor="let searchUser of listSearchUser let i = index">
             <div class="col-sm-3 col-xs-3 sideBar-avatar">
               <div class="avatar-icon">
-                <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
+                <img [src]="searchUser.avatarSrc">
               </div>
             </div>
             <div class="col-sm-9 col-xs-9 sideBar-main">
@@ -112,11 +116,11 @@
 	 
 	 
 	<div *ngIf="isUserDetail">
-		<app-userdetail [friendId]="friendId"></app-userdetail>
+		<app-userdetail [friendId]="friendId" (updateAvatarEvent)="updateAvatar($event)" (updateUserInfoEvent)="updateUserInfo($event)"></app-userdetail>
 	</div>
 	
   </div>
 </div>
 
-<app-dialog [(visible)]="showDialog" [(friendId)]="userDetailId"></app-dialog>
-
+<app-dialogalert [(visible)]="showDialogAlert" [(messageAlert)]="messageAlert"></app-dialogalert>
+ 

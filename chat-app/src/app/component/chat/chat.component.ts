@@ -22,20 +22,20 @@ import { Observable } from 'rxjs';
 })
 export class ChatComponent implements OnInit {
 
-  public showDialog = false;
-
   public friendId = '';
-  public userDetailId = '';
   public userId = localStorage.getItem(Constant.USER_ID);
   public token = localStorage.getItem(Constant.TOKEN);
   public avatarUser = Constant.DEFAULT_AVATAR;
   public userInfo: User = JSON.parse( localStorage.getItem( Constant.USER) );
   public newMessage: Message;
+  public messageAlert: string;
 
   public isUserDetail = false;
   public ischatHistory = false;
   public isListConversation = true;
   public isSearchUser = false;
+  public showDialogAlert = false;
+  public showDialog = false;
 
   public searchName: string;
   public listSearchUser: User[];
@@ -71,6 +71,9 @@ export class ChatComponent implements OnInit {
         const image = Constant.BASE64_HEADER + data.data;
         console.log(image);
         this.avatarUser = image;
+      } else if (data.code === ReponseCode.INVALID_TOKEN) {
+        localStorage.clear();
+        this.router.navigate(['/login']);
       }
     });
   }
@@ -164,8 +167,9 @@ export class ChatComponent implements OnInit {
   userDetail(userId: string) {
     console.log('user detail');
 
-    this.userDetailId = userId;
-    this.showDialog = !this.showDialog;
+    this.friendId = userId;
+    this.isUserDetail = true;
+    this.ischatHistory = false;
   }
 
   getChatConversation() {
@@ -184,6 +188,8 @@ export class ChatComponent implements OnInit {
       } else if (data.code === ReponseCode.INVALID_TOKEN) {
         localStorage.clear();
         this.router.navigate(['/login']);
+      } else {
+        this.showDialogAlertError(data.data);
       }
     });
   }
@@ -192,17 +198,13 @@ export class ChatComponent implements OnInit {
     if (this.listConversasions !== null && this.listConversasions.length !== 0) {
       let i = 0;
       for (i = 0; i < this.listConversasions.length; i++) {
-        const avatarId = this.listConversasions[i].avatar;
-        this.listConversasions[i].avatarSrc = Constant.DEFAULT_AVATAR;
-        if (avatarId !== null && avatarId.trim() !== '') {
-            this.fileService.getImageData(avatarId).subscribe((data: ResponseData) => {
-              if (data.code === ReponseCode.SUCCESSFUL) {
-                this.listConversasions[i].avatarSrc = Constant.BASE64_HEADER + data.data;
-                console.log(this.listConversasions[i]);
-              }
-            });
+        const lastChat: LastChat = this.listConversasions[i];
+        if ( lastChat.avatarSrc !== null && lastChat.avatarSrc !== undefined && lastChat.avatarSrc.trim() !== '') {
+          lastChat.avatarSrc = Constant.BASE64_HEADER + lastChat.avatarSrc;
+        } else {
+          lastChat.avatarSrc = Constant.DEFAULT_AVATAR;
         }
-
+        this.listConversasions[i] = lastChat;
       }
     }
   }
@@ -234,17 +236,39 @@ export class ChatComponent implements OnInit {
         this.isListConversation = false;
 
         this.listSearchUser = data.data;
+        this.addAvatarForSearchUser();
         console.log('list search user');
         console.log(this.listSearchUser);
       } else if (data.code === ReponseCode.INVALID_TOKEN) {
         localStorage.clear();
         this.router.navigate(['/login']);
+      } else {
+        this.showDialogAlertError(data.data);
       }
     });
   }
 
-  onChang(imageSrc: string) {
-    console.log('change avatar');
+  addAvatarForSearchUser() {
+    if (this.listSearchUser !== undefined && this.listSearchUser.length > 0 ) {
+      let i = 0;
+      for (i = 0; i < this.listSearchUser.length; i++) {
+        const user: User = this.listSearchUser[i];
+        if ( user.avatarSrc !== null && user.avatarSrc !== undefined && user.avatarSrc !== '') {
+          user.avatarSrc = Constant.BASE64_HEADER + user.avatarSrc;
+        } else {
+          user.avatarSrc = Constant.DEFAULT_AVATAR;
+        }
+        this.listSearchUser[i] = user;
+      }
+    }
+  }
+
+  updateAvatar(event) {
+    this.avatarUser = event;
+  }
+
+  updateUserInfo(event) {
+    this.userInfo = event;
   }
 
   onChange(message: Message) {
@@ -263,6 +287,8 @@ export class ChatComponent implements OnInit {
           lastMessage.value = message.value;
         } else if (message.messageType === MessageType.IMAGE) {
           lastMessage.value = Constant.MESSAGE_IMAGE;
+        } else if (message.messageType === MessageType.FILE) {
+          lastMessage.value = Constant.MESSAGE_FILE;
         }
 
         lastMessage.timeDate = new Date();
@@ -290,6 +316,13 @@ export class ChatComponent implements OnInit {
           newLastChat.friendId = user.userId;
           newLastChat.userName = user.userName;
           newLastChat.avatar = user.avatar;
+          if (message.messageType === MessageType.TEXT) {
+            newLastChat.value = message.value;
+          } else if (message.messageType === MessageType.IMAGE) {
+            newLastChat.value = Constant.MESSAGE_IMAGE;
+          } else if (message.messageType === MessageType.FILE) {
+            newLastChat.value = Constant.MESSAGE_FILE;
+          }
           if (message.fromUserId !== this.friendId && message.fromUserId !== this.userId) {
             newLastChat.unreadNumber = 1;
           }
@@ -324,4 +357,10 @@ export class ChatComponent implements OnInit {
 
     return newLastChat;
   }
+
+  showDialogAlertError(message: string) {
+    this.messageAlert = message;
+    this.showDialogAlert = !this.showDialogAlert;
+  }
+
 }

@@ -9,6 +9,7 @@ export class User {
   gender: number;
   birthday: string;
   avatar: string;
+  avatarSrc: string;
 
   constructor() {
     this.userId = '';

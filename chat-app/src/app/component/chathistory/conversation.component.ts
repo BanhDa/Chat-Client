@@ -4,12 +4,14 @@ import { Message } from '../../entity/message/message';
 import { MessageType } from '../../entity/message/messagetype';
 import { ResponseData } from '../../entity/response.data';
 import { User } from '../../entity/user';
+import { UserFile } from '../../entity/userfile';
 import { UserImage } from '../../entity/userimage';
 import { ChatService } from '../../services/chat.service';
 import { FileService } from '../../services/file.service';
 import { UserService } from '../../services/user.service';
 import { WebsocketService } from '../../services/websocket.service';
-import { Component, OnInit, Input, OnChanges, SimpleChanges, EventEmitter, Output, ElementRef, ViewChild, Renderer } from '@angular/core';
+import { EventEmitter, Output, ElementRef, ViewChild, Renderer, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { RequestOptions, ResponseContentType } from '@angular/http';
 import { Router } from '@angular/router';
 import { ImageUploadComponent } from 'angular2-image-upload';
@@ -20,9 +22,10 @@ import { Observable } from 'rxjs/Observable';
   templateUrl: './conversation.component.html',
   styleUrls: ['./conversation.component.css']
 })
-export class ConversationComponent implements OnInit, OnChanges {
+export class ConversationComponent implements OnInit, OnChanges, AfterViewChecked {
 
   @ViewChild('uploadImage') uploadImage: ElementRef;
+  @ViewChild('uploadfile') uploadfile: ElementRef;
   @ViewChild('conversationElement') private myScrollContainer: ElementRef;
 
   @Output('eventChat')
@@ -33,8 +36,8 @@ export class ConversationComponent implements OnInit, OnChanges {
   @Input() newMessage: Message;
 
   public friend = new User();
-  public friendAvatarSrc = Constant.DEFAULT_AVATAR;
   public showDialogUserDetail = false;
+  public showDialogAlert = false;
 
   public token = localStorage.getItem(Constant.TOKEN);
   public userId = localStorage.getItem(Constant.USER_ID);
@@ -42,9 +45,11 @@ export class ConversationComponent implements OnInit, OnChanges {
   public messages = new Array<Message>();
   public skip = 0;
   public take = 100;
+  public messageAlert = '';
 
   public messageText = MessageType.TEXT;
   public messageImage = MessageType.IMAGE;
+  public messageFile = MessageType.FILE;
 
   constructor(private chatService: ChatService,
           private router: Router,
@@ -61,8 +66,11 @@ export class ConversationComponent implements OnInit, OnChanges {
     this.listenMessageChat();
     this.getChatHistory();
     this.getUserInfo();
-    this.loadFriendAvatar();
     this.markRead();
+  }
+
+  ngAfterViewChecked() {
+    this.scrollToBottom();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -71,7 +79,6 @@ export class ConversationComponent implements OnInit, OnChanges {
       console.log(this.friendId);
       this.getChatHistory();
       this.getUserInfo();
-      this.loadFriendAvatar();
       this.markRead();
     } else if (changes['newMessage']) {
       console.log('event new message from server');
@@ -80,7 +87,8 @@ export class ConversationComponent implements OnInit, OnChanges {
             && this.newMessage.fromUserId === this.friendId) {
 
         if (this.newMessage.messageType === MessageType.IMAGE
-              || this.newMessage.messageType === MessageType.TEXT) {
+              || this.newMessage.messageType === MessageType.TEXT
+              || this.newMessage.messageType === MessageType.FILE) {
           this.messages.push(this.newMessage);
           this.markRead();
         } else if (this.newMessage.messageType === MessageType.READ) {
@@ -120,20 +128,10 @@ export class ConversationComponent implements OnInit, OnChanges {
     this.updateReadTime();
   }
 
-  private scrollToBottom(): void {
-    console.log('scrollToBottom');
+ scrollToBottom(): void {
     try {
         this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
     } catch (err) { }
-  }
-
-  loadFriendAvatar() {
-    console.log('load avat friend');
-    this.fileService.getImageData(this.friendId).subscribe( (data: ResponseData) => {
-      if (data.code === ReponseCode.SUCCESSFUL) {
-        this.friendAvatarSrc = Constant.BASE64_HEADER + data.data;
-      }
-    });
   }
 
   listenMessageChat() {
@@ -148,10 +146,11 @@ export class ConversationComponent implements OnInit, OnChanges {
       if (data.code === ReponseCode.SUCCESSFUL) {
         this.messages = data.data;
         console.log(this.messages);
-        this.scrollToBottom();
       } else if (data.code === ReponseCode.INVALID_TOKEN) {
         localStorage.clear();
         this.router.navigate(['/login']);
+      } else {
+        this.showDialogAlertError(data.data);
       }
     } );
   }
@@ -159,12 +158,29 @@ export class ConversationComponent implements OnInit, OnChanges {
   getUserInfo() {
     this.userService.getUser(this.friendId).subscribe ( (data: ResponseData) => {
         if (data.code === ReponseCode.SUCCESSFUL) {
-        this.friend = data.data;
-      } else if (data.code === ReponseCode.INVALID_TOKEN) {
-        localStorage.clear();
-        this.router.navigate(['/login']);
-      }
+          this.friend = data.data;
+          this.loadFriendAvatar();
+         } else if (data.code === ReponseCode.INVALID_TOKEN) {
+          localStorage.clear();
+          this.router.navigate(['/login']);
+        }
       });
+  }
+
+  loadFriendAvatar() {
+    this.friend.avatarSrc = Constant.DEFAULT_AVATAR;
+    if (this.friend.avatar !== null
+          && this.friend.avatar !== undefined
+          && this.friend.avatar !== '') {
+      this.fileService.getImageData(this.friend.avatar).subscribe( (data: ResponseData) => {
+        if (data.code === ReponseCode.SUCCESSFUL) {
+          this.friend.avatarSrc = Constant.BASE64_HEADER + data.data;
+        } else if (data.code === ReponseCode.INVALID_TOKEN) {
+          localStorage.clear();
+          this.router.navigate(['/login']);
+        }
+      });
+    }
   }
 
   on(event: string, callBack: any): Observable<Message> {
@@ -177,7 +193,6 @@ export class ConversationComponent implements OnInit, OnChanges {
         console.log('reveiver data from server');
         console.log(message);
         this.messages.push(message);
-        this.scrollToBottom();
         this.eventChat.emit(message);
       });
     }
@@ -210,7 +225,6 @@ export class ConversationComponent implements OnInit, OnChanges {
       message.token = this.token;
 
       this.messages.push(message);
-      this.scrollToBottom();
       this.chatService.sendMessage(message);
       this.inputMessage = '';
 
@@ -218,8 +232,8 @@ export class ConversationComponent implements OnInit, OnChanges {
     }
   }
 
-  sendMessageFile(messageType: string, fileId: string) {
-    if (fileId !== null && fileId.trim() !== '') {
+  sendMessageFile(messageType: string, fileId: string, fileName: string) {
+    if (fileId !== undefined && fileId.trim() !== '') {
       const currentTime = Date.now();
 
       const message = new Message();
@@ -227,6 +241,9 @@ export class ConversationComponent implements OnInit, OnChanges {
       message.fromUserId = this.userId;
       message.toUserId = this.friendId;
       message.value = fileId;
+      if (fileName !== undefined && fileName !== '') {
+        message.value = fileId + '|' + fileName;
+      }
       message.messageType = messageType;
       message.time = currentTime;
 
@@ -242,39 +259,67 @@ export class ConversationComponent implements OnInit, OnChanges {
     }
   }
 
-  handleInputImageChange(event) {
-    console.log('upload image');
-    const image = event.target.files[0];
+  handleInputFileChange(event) {
+    console.log('upload file');
+    const file = event.target.files[0];
     const pattern = /image-*/;
     const reader = new FileReader();
 
-    if (!image.type.match(pattern)) {
-        alert('invalid format');
-        return;
+//    file is image
+    if (file.type.match(pattern)) {
+        reader.readAsDataURL(file);
+
+        reader.onloadend = () => {
+            this.fileService.postImage(file).subscribe ( (data: ResponseData) => {
+              const dataObject = JSON.parse(data.toString());
+              if (dataObject.code === ReponseCode.SUCCESSFUL) {
+                const userImage: UserImage = dataObject.data;
+                this.sendMessageFile(MessageType.IMAGE, userImage.imageId, undefined);
+              } else if (data.code === ReponseCode.INVALID_TOKEN) {
+                localStorage.clear();
+                this.router.navigate(['/login']);
+              } else {
+                this.showDialogAlertError(data.data);
+              }
+            } );
+        };
+    } else {
+//      file is not image
+      reader.readAsDataURL(file);
+
+      reader.onloadend = () => {
+          this.fileService.postFile(file).subscribe ( (data: ResponseData) => {
+            const dataObject = JSON.parse(data.toString());
+            if (dataObject.code === ReponseCode.SUCCESSFUL) {
+              const userFile: UserFile = dataObject.data;
+              const fileName = file.name;
+              this.sendMessageFile(MessageType.FILE, userFile.fileId, fileName);
+            } else if (data.code === ReponseCode.INVALID_TOKEN) {
+              localStorage.clear();
+              this.router.navigate(['/login']);
+            } else {
+              this.showDialogAlertError(data.data);
+            }
+          } );
+      };
     }
-
-//        this.loaded = false;
-//        reader.onload = this._handleReaderLoaded.bind(this);
-
-
-    reader.readAsDataURL(image);
-
-    reader.onloadend = () => {
-        this.fileService.postFormData(image).subscribe ( (data: ResponseData) => {
-          const dataObject = JSON.parse(data.toString());
-          if (dataObject.code === ReponseCode.SUCCESSFUL) {
-            const userImage: UserImage = dataObject.data;
-            this.sendMessageFile(MessageType.IMAGE, userImage.imageId);
-          }
-        } );
-    };
-
   }
 
- uploadFile() {
+ choseImage() {
     const event = new MouseEvent('click', {bubbles: true});
     this.renderer.invokeElementMethod(
     this.uploadImage.nativeElement, 'dispatchEvent', [event]);
+  }
+
+  choseFile() {
+    const event = new MouseEvent('click', {bubbles: true});
+    this.renderer.invokeElementMethod(
+    this.uploadfile.nativeElement, 'dispatchEvent', [event]);
+  }
+
+  showDialogAlertError(message: string) {
+    this.messageAlert = message;
+    this.showDialogAlert = !this.showDialogAlert;
   }
 
 }

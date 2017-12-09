@@ -2,7 +2,7 @@
       <div class="row heading">
         <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
           <div class="heading-avatar-icon">
-            <img [src]="friendAvatarSrc" (click)="userDetail()">
+            <img [src]="friend.avatarSrc" (click)="userDetail()">
           </div>
         </div>
         <div class="col-sm-8 col-xs-7 heading-name">
@@ -35,6 +35,9 @@
               <div class="message-text" *ngIf="message.messageType === messageImage">
                	<app-chatimage [imageId]="message.value"></app-chatimage>
               </div>
+              <div class="message-text" *ngIf="message.messageType === messageFile">
+               	<app-chatfile [valueMessageFile]="message.value"></app-chatfile>
+              </div>
             </div>
           </div>
           
@@ -46,6 +49,9 @@
               <div class="message-text" *ngIf="message.messageType === messageImage">
                	<app-chatimage [imageId]="message.value"></app-chatimage>
               </div>
+              <div class="message-text" *ngIf="message.messageType === messageFile">
+               	<app-chatfile [valueMessageFile]="message.value"></app-chatfile>
+              </div>
               <span class="message-time pull-right" *ngIf="message.readTime">
                 Seen!
               </span>
@@ -56,15 +62,12 @@
       
     </div>
     <form (submit)="sendMessage()">
-    	<div class="row reply footer">
-    	<!-- 
+    	<div class="row reply footer"> 
    			<div class="col-sm-1 col-xs-1 reply-emojis">
-	          <i class="fa fa-smile-o fa-2x"></i>
+	          <i class="fa fa-paperclip fa-2x" (click)="choseFile()"></i>
 	        </div>
-	        
-	    -->
 	        <div class="col-sm-1 col-xs-1 reply-emojis">
-	        <i class="glyphicon glyphicon-picture" (click)="uploadFile()"></i>
+	        <i class="glyphicon glyphicon-picture" (click)="choseImage()"></i>
 	         
 	        </div>
 	        
@@ -78,7 +81,9 @@
 	        </div>
     	</div>
    	</form>
-   	<input #uploadImage  type="file" name="single" name="image" accept="image/*" (change)="handleInputImageChange($event)" style="display: none"/>
+   	<input #uploadImage  type="file" name="single" name="image" accept="image/*" (change)="handleInputFileChange($event)" style="display: none"/>
+   	<input #uploadfile  type="file" name="single" name="file" (change)="handleInputFileChange($event)" style="display: none"/>
 </div>
 
 <app-dialog [(visible)]="showDialogUserDetail" [(friendId)]="friendId"></app-dialog>
+<app-dialogalert [(visible)]="showDialogAlert" [(messageAlert)]="messageAlert"></app-dialogalert>

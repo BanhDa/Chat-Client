@@ -41,7 +41,7 @@ export class FileService {
     }));
   }
 
-  postFormData(file: File): Observable<ResponseData> {
+  postImage(file: File): Observable<ResponseData> {
     return Observable.fromPromise(new Promise((resolve, reject) => {
       const formData: any = new FormData();
       const xhr = new XMLHttpRequest();
@@ -59,14 +59,46 @@ export class FileService {
         }
       };
 
-  //    xhr.setRequestHeader('Authorization', localStorage.getItem('token'));
       xhr.open('POST', Constant.BASE_URL + '/file/uploadimage', true);
       xhr.send(formData);
     }));
   }
 
+  postFile(file: File): Observable<ResponseData> {
+    return Observable.fromPromise(new Promise((resolve, reject) => {
+      const formData: any = new FormData();
+      const xhr = new XMLHttpRequest();
+
+      formData.append('file', file, file.name);
+      formData.append('userid', localStorage.getItem(Constant.USER_ID));
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            resolve(xhr.response);
+          } else {
+            reject(xhr.response);
+          }
+        }
+      };
+
+      xhr.open('POST', Constant.BASE_URL + '/file/uploadFile', true);
+      xhr.send(formData);
+    }));
+  }
+
+  downloadfile(fileId: string) {
+//   return this.apiService.( this.files_api + this.title +"/"+ runname + "/?file="+ type)
+//            .catch(this.logAndPassOn);
+     if (fileId !== undefined && fileId !== '') {
+      console.log('get file');
+      const url = Constant.BASE_URL + '/file/downloadfile?fileid=' + fileId;
+      return this.apiService.post(url, '');
+    }
+}
+
   getImageData(imageId: string): Observable<any> {
-    if (imageId !== null && imageId !== '') {
+    if (imageId !== undefined && imageId !== '') {
       console.log('get image');
       const url = Constant.BASE_URL + '/file/loadimage?imageid=' + imageId;
       return this.apiService.post(url, '');

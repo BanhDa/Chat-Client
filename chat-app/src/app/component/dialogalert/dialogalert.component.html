@@ -1,0 +1,6 @@
+<div  *ngIf="visible" class="dialog">
+  <ng-content></ng-content>
+	
+  <span>{{messageAlert}}</span>
+</div>
+<div *ngIf="visible" class="overlay" (click)="close()"></div>

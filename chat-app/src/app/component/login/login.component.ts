@@ -23,6 +23,8 @@ import { ResponseContentType } from '@angular/http';
 export class LoginComponent implements OnInit {
   loginUser = new User();
   registerUser = new User();
+  public messageAlert = '';
+  public showDialogAlert = false;
 
   constructor(private userService: UserService, private router: Router) { }
 
@@ -43,6 +45,11 @@ export class LoginComponent implements OnInit {
         console.log('get token from loacal');
         console.log(localStorage.getItem(Constant.TOKEN));
         this.router.navigate(['/chat']);
+      } else if (data.code === ReponseCode.INVALID_TOKEN) {
+        localStorage.clear();
+        this.router.navigate(['/login']);
+      } else {
+        this.showDialogAlertError(data.data);
       }
     });
   }
@@ -57,8 +64,17 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('userId', this.registerUser.userId);
         localStorage.setItem('token', data.token);
         this.router.navigate(['/chat']);
+      } else if (data.code === ReponseCode.INVALID_TOKEN) {
+        localStorage.clear();
+        this.router.navigate(['/login']);
+      } else {
+        this.showDialogAlertError(data.data);
       }
     });
   }
 
+  showDialogAlertError(message: string) {
+    this.messageAlert = message;
+    this.showDialogAlert = !this.showDialogAlert;
+  }
 }

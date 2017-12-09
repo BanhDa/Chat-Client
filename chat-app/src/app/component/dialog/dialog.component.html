@@ -40,6 +40,17 @@
                                     </tr>
                                     </tbody>
                                 </table>
+                                <div class="dropdown">
+  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Dropdown
+  </button>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+    <li role="menuitem"><a class="dropdown-item disabled" href="#">Disabled</a></li>
+    <li role="menuitem"><a class="dropdown-item" href="#">Mousedown</a></li>
+    <li role="menuitem"><a class="dropdown-item" href="#">Click</a></li>
+    <li role="menuitem"><a class="dropdown-item" href="#" >Mouseup</a></li>
+  </ul>
+</div>
                             </div>
                         </div>
                     </div>
@@ -50,3 +61,4 @@
   
 </div>
 <div *ngIf="visible" class="overlay" (click)="close()"></div>
+<app-dialogalert [(visible)]="showDialogAlert" [(messageAlert)]="messageAlert"></app-dialogalert>

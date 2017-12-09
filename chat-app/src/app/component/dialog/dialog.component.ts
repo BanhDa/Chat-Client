@@ -35,6 +35,8 @@ export class DialogComponent implements OnInit, OnChanges {
 
   avatarSrc = Constant.DEFAULT_AVATAR;
   userDetail = new User();
+  public messageAlert = '';
+  public showDialogAlert = false;
 
   close() {
     this.visible = false;
@@ -70,6 +72,8 @@ export class DialogComponent implements OnInit, OnChanges {
         } else if (data.code === ReponseCode.INVALID_TOKEN) {
           localStorage.clear();
           this.router.navigate(['/login']);
+        } else {
+          this.showDialogAlertError(data.data);
         }
       });
   }
@@ -81,8 +85,17 @@ export class DialogComponent implements OnInit, OnChanges {
         const image = 'data:image/jpeg;base64,' + data.data;
         console.log(image);
         this.avatarSrc = image;
+      } else if (data.code === ReponseCode.INVALID_TOKEN) {
+        localStorage.clear();
+        this.router.navigate(['/login']);
+      } else {
+        this.showDialogAlertError(data.data);
       }
     });
   }
 
+  showDialogAlertError(message: string) {
+    this.messageAlert = message;
+    this.showDialogAlert = !this.showDialogAlert;
+  }
 }

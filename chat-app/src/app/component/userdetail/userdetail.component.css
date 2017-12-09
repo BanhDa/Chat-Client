@@ -10,6 +10,23 @@
     border-radius: 4px 4px 4px 4px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
     margin-bottom: 20px;
+}
+
+.button-update, .button-cancel {
+	margin-top: 5%;	
+}
+
+.form-edit {
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    box-shadow: inset 0 0px 0px rgba(0,0,0,.075);
+    display: inherit;
+}
+
+.heading-dot {
+	margin-top: 2%;
+	text-align: center;
 }   
 
 .panel-primary {
@@ -31,7 +48,8 @@
 }   
 
 .panel-title {
-    font-size: 16px;
+	color: darkgrey;
+    font-size: xx-large;
     margin-bottom: 0;
     margin-top: 0;
 }   

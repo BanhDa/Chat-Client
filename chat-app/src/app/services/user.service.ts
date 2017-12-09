@@ -42,6 +42,12 @@ export class UserService {
     return this.apiService.post(url, JSON.stringify(''));
   }
 
+  updateUserInfo(user: User): Observable<ResponseData> {
+    const path = '/user/editprofile';
+    const url = Constant.BASE_URL + path;
+    return this.apiService.post(url, JSON.stringify(user));
+  }
+
   searchUser(searchUserName: string, skip: number, take: number): Observable<ResponseData> {
     const path = '/user/searchuser';
     const url = Constant.BASE_URL + path;
