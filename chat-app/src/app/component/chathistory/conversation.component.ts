@@ -135,6 +135,7 @@ export class ConversationComponent implements OnInit, OnChanges, AfterViewChecke
   }
 
   listenMessageChat() {
+    console.log('add event chat');
     this.on('chat', (data) => {
       console.log(data);
     });
@@ -150,7 +151,7 @@ export class ConversationComponent implements OnInit, OnChanges, AfterViewChecke
         localStorage.clear();
         this.router.navigate(['/login']);
       } else {
-        this.showDialogAlertError(data.data);
+
       }
     } );
   }

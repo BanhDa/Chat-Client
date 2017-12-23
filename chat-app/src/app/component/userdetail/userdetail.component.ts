@@ -99,7 +99,7 @@ export class UserdetailComponent implements OnInit, OnChanges {
         localStorage.clear();
         this.router.navigate(['/login']);
       } else {
-        this.showDialogAlertError(data.data);
+
       }
     });
   }

@@ -339,6 +339,10 @@ export class ChatComponent implements OnInit {
       return last1.time > last2.time ? -1 : last1.time === last2.time ? 0 : 1;
     } );
 
+    if (this.ischatHistory && message.fromUserId === this.friendId && message.fromUserId === this.userId ) {
+      this.markRead(this.friendId);
+    }
+
   }
 
   parseMessageIntoLastChat(message: Message): LastChat {
