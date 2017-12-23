@@ -180,10 +180,7 @@ export class ChatComponent implements OnInit {
         this.isListConversation = true;
         this.isSearchUser = false;
         this.listConversasions = data.data;
-
-//        format send time
-//        this.updateLastChatDateTime();
-
+        console.log(this.listConversasions);
         this.loadAvatarListConversation();
       } else if (data.code === ReponseCode.INVALID_TOKEN) {
         localStorage.clear();

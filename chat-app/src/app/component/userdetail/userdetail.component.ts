@@ -8,6 +8,8 @@ import { ResponseData } from '../../entity/response.data';
 import { ReponseCode } from '../../common/response.code';
 import { UserImage } from '../../entity/userimage';
 import { FileService } from '../../services/file.service';
+import { Utils } from '../../common/utils';
+import { MessageError } from '../../common/message.error';
 
 @Component({
   selector: 'app-userdetail',
@@ -53,20 +55,22 @@ export class UserdetailComponent implements OnInit, OnChanges {
   updateUserInfo() {
     console.log(this.friendUpdate);
     if (this.friendUpdate !== undefined && this.friendUpdate !== null) {
-      this.userService.updateUserInfo(this.friendUpdate).subscribe( (data: ResponseData) => {
-        if (data.code === ReponseCode.SUCCESSFUL) {
-          this.userDetail = data.data;
-          this.isEditProfile = false;
-          this.updateUserInfoEvent.emit(this.userDetail);
-          localStorage.setItem(Constant.USER, JSON.stringify(this.userDetail));
-        } else if (data.code === ReponseCode.INVALID_TOKEN) {
-          localStorage.clear();
-          this.router.navigate(['/login']);
-        } else {
-          this.messageAlert = data.data;
-          this.showDialogAlert = !this.showDialogAlert;
-        }
-      });
+      if (this.validateDataUserUpdate()) {
+        this.userService.updateUserInfo(this.friendUpdate).subscribe( (data: ResponseData) => {
+          if (data.code === ReponseCode.SUCCESSFUL) {
+            this.userDetail = data.data;
+            this.isEditProfile = false;
+            this.updateUserInfoEvent.emit(this.userDetail);
+            localStorage.setItem(Constant.USER, JSON.stringify(this.userDetail));
+          } else if (data.code === ReponseCode.INVALID_TOKEN) {
+            localStorage.clear();
+            this.router.navigate(['/login']);
+          } else {
+            this.messageAlert = data.data;
+            this.showDialogAlert = !this.showDialogAlert;
+          }
+        });
+      }
     }
   }
 
@@ -173,6 +177,42 @@ export class UserdetailComponent implements OnInit, OnChanges {
         this.showDialogAlertError(data.data);
       }
     });
+  }
+
+  validateDataUserUpdate(): boolean {
+    return this.validateEmail(this.friendUpdate.email)
+          && this.validatePassword(this.friendUpdate.password)
+          && this.validDateUserName(this.friendUpdate.userName);
+  }
+
+  validateEmail(email: string): boolean {
+    if ( !Utils.validString(email) ) {
+      this.showDialogAlertError(MessageError.EMAIL_REQUIRED);
+      return false;
+    } else if (!Constant.EMAIL_REGEX.test(email)) {
+      this.showDialogAlertError(MessageError.VALID_EMAIL);
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  validDateUserName(userName: string): boolean {
+    if (Utils.validString(userName)) {
+      return true;
+    } else {
+      this.showDialogAlertError(MessageError.USER_NAME_REQUIRED);
+      return false;
+    }
+  }
+
+  validatePassword(password: string): boolean {
+    if ( Utils.validString(password) ) {
+      return true;
+    } else {
+      this.showDialogAlertError(MessageError.PASSWORD_REQUIRED);
+      return false;
+    }
   }
 
   showDialogAlertError(message: string) {
